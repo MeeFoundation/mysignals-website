@@ -1,0 +1,62 @@
+---
+import AnimatedAnchor from "@/components/AnimatedAnchor.astro";
+import ImageMod from "@/components/ImageMod.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const sectionData = await getListPage("descriptionSection", "description");
+if (!sectionData.data.enable) {
+  return null;
+}
+
+const { title, bg_image, description, image, button, id } = sectionData.data;
+---
+
+<section class="section" id={id}>
+  <div class="container">
+    <div class="relative overflow-hidden rounded-2xl p-7 md:p-10 lg:p-16">
+      <div
+        class="flex flex-col justify-start items-center relative text-center z-10 lg:gy-0"
+      >
+        <div class="lg:col-5">
+          <div class="min-h-full pb-16">
+            <div>
+              <h2
+                set:html={markdownify(title)}
+                class="has-gradient mb-6"
+                data-aos="fade-up-sm"
+              />
+              <div data-aos="fade-up-sm" data-aos-delay="50">
+                <p
+                  set:html={markdownify(description)}
+                  class="text-lg/[inherit]"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="" data-aos="fade-right-sm" data-aos-delay="150">
+          {
+            button.enable && (
+              <AnimatedAnchor
+                className="btn-primary "
+                link={button.link}
+                label={button.label}
+                data-aos="fade-up-sm"
+                data-aos-delay="100"
+              />
+            )
+          }
+        </div>
+      </div>
+      <!-- <div aria-hidden="true">
+        <ImageMod
+          class="absolute inset-0 z-0 h-full w-full object-contain object-bottom-left"
+          src={bg_image}
+          alt="background pattern image"
+        />
+      </div> -->
+    </div>
+  </div>
+</section>

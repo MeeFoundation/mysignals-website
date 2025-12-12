@@ -1,0 +1,83 @@
+---
+import BlogCard from "@/components/BlogCard.astro";
+import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
+import { sortByDate } from "@/lib/utils/sortFunctions";
+import { markdownify } from "@/lib/utils/textConverter";
+
+let { content, largeHeading, posts } = Astro.props;
+
+// Get default blog data from the "sections" content collection
+let blogIndex = await getListPage("blog", "-index");
+if (blogIndex.data.draft) {
+  return Astro.redirect("/404");
+}
+let { title, description } = blogIndex.data;
+
+// Override default blog data (Title, Subtitle & Description) with props if provided
+if (content) {
+  ({ title, description } = content);
+}
+
+// Constant for blog folder path
+const BLOG_FOLDER = "blog";
+
+// Get all blog posts from the specified folder if no posts are passed as props
+posts = posts ? posts : await getSinglePage(BLOG_FOLDER);
+
+// Fetch all blog posts from the specified folder
+const featuredPost = posts.find((post: any) => post.data.featured === true);
+const featuredExcludePosts = posts.filter(
+  (post: any) => post.data.featured !== true
+);
+
+// Sort blog posts by date in descending order
+let sortedPosts = sortByDate(featuredExcludePosts);
+---
+
+<section class="section overflow-hidden">
+  <div class="container">
+    <div class="row">
+      <div class="mx-auto text-center lg:col-8 xl:col-6" data-aos="fade-up-sm">
+        {
+          title && largeHeading ? (
+            <h1 class="has-gradient mb-6" set:html={markdownify(title)} />
+          ) : (
+            <h2 class="has-gradient mb-6" set:html={markdownify(title)} />
+          )
+        }
+        {
+          description && (
+            <p
+              class="text-lg/[inherit] opacity-80"
+              set:html={markdownify(description)}
+            />
+          )
+        }
+      </div>
+      <div
+        class="mx-auto pt-20 md:col-10"
+        data-aos="fade-up-sm"
+        data-aos-delay="200">
+        <div class="row gx-4 gy-5 justify-center md:gx-5">
+          {
+            featuredPost && (
+              <div class="col-12">
+                <BlogCard featuredCardLayout={true} content={featuredPost} />
+              </div>
+            )
+          }
+          {
+            sortedPosts.map(
+              (blog) =>
+                blog && (
+                  <div class="col-12">
+                    <BlogCard content={blog} />
+                  </div>
+                )
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

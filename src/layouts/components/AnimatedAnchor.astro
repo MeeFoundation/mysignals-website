@@ -1,0 +1,43 @@
+---
+import DynamicIcon from "@/helpers/DynamicIcon";
+
+interface Props {
+  link: string;
+  label: string;
+  className?: string;
+  fullWidth?: boolean;
+  hideIcon?: boolean;
+  [key: string]: any;
+}
+
+const { link, hideIcon, fullWidth, label, className, ...rest } =
+  Astro.props as Props;
+---
+
+<a
+  class={`btn${className ? ` ${className}` : ""}${fullWidth ? ` full-width` : ""}${!hideIcon ? ` has-icon` : ""}`}
+  target={link.startsWith("http") ? "_blank" : "_self"}
+  href={link}
+  {...rest}>
+  <span class="value">
+    <span data-content={label}>{label}</span>
+  </span>
+  {
+    !hideIcon && (
+      <span class="icon">
+        <span>
+          <span>
+            <DynamicIcon className="text-xs" icon={"FaChevronRight"} />
+          </span>
+          <span>
+            <DynamicIcon
+              aria-hidden={true}
+              className="text-xs"
+              icon={"FaChevronRight"}
+            />
+          </span>
+        </span>
+      </span>
+    )
+  }
+</a>

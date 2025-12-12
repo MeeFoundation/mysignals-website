@@ -1,0 +1,197 @@
+---
+import AnimatedAnchor from "@/components/AnimatedAnchor.astro";
+import IntegrationCard from "@/components/IntegrationCard.astro";
+import { getListPage, getSinglePage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const {
+  largeHeading,
+  hideBackground,
+  fluidContainer,
+  hideHeadingOverlay,
+  hideCTAButton,
+} = Astro.props;
+
+const sectionData = await getListPage("integrationSection", "integration");
+if (!sectionData.data.enable) {
+  return null;
+}
+
+const { title, description, button } = sectionData.data;
+const list = await getSinglePage("integration");
+
+let firstList = list.slice(0, Math.floor(list.length / 2));
+firstList = []; //[...firstList, ...firstList];
+let secondList = list.slice(Math.floor(list.length / 2), list.length);
+secondList = []; //[...secondList, ...secondList];
+---
+
+<section class="section overflow-hidden mb-28">
+  {
+    fluidContainer ? (
+      <div class="container-fluid">
+        <div
+          class={`${!hideBackground && "overflow-hidden rounded-xl border border-border bg-body pt-10 md:pt-20"}`}
+        >
+          <div class="row">
+            <div class="col-12 text-center" data-aos="fade-up-sm">
+              <div class="px-5 md:px-10">
+                {title && largeHeading ? (
+                  <h1 class="has-gradient mb-6" set:html={markdownify(title)} />
+                ) : (
+                  <h2 class="has-gradient mb-6" set:html={markdownify(title)} />
+                )}
+                {description && (
+                  <p
+                    class="text-lg/[inherit] opacity-80"
+                    set:html={markdownify(description)}
+                  />
+                )}
+
+                {!hideCTAButton && button && button.enable && (
+                  <AnimatedAnchor
+                    className="btn-primary mt-11"
+                    link={button.link}
+                    label={button.label}
+                  />
+                )}
+
+                {!hideHeadingOverlay && (
+                  <div
+                    aria-hidden="true"
+                    class="rotate-animation pointer-events-none absolute left-2/4 top-44 -z-10 h-80 w-[550px] -translate-x-2/4 rounded-full from-secondary via-secondary/80 via-60% to-dark/0 opacity-60 blur-[120px] bg-linear-to-l"
+                  />
+                )}
+              </div>
+            </div>
+            <div
+              class="col-12 pt-20"
+              data-aos="fade-up-sm"
+              data-aos-delay={200}
+            >
+              <div class="marquee-wrapper flex gap-5 overflow-hidden">
+                <div class="marquee marquee-duration-60 flex shrink-0 items-center justify-center gap-5">
+                  {firstList.map(({ data }) => (
+                    <IntegrationCard image={data.image!} name={data.title} />
+                  ))}
+                </div>
+                <div
+                  class="marquee marquee-duration-60 flex shrink-0 items-center justify-center gap-5"
+                  aria-hidden="true"
+                >
+                  {firstList.map(({ data }) => (
+                    <IntegrationCard image={data.image!} name={data.title} />
+                  ))}
+                </div>
+              </div>
+              <div class="marquee-wrapper mt-5 flex gap-5 overflow-hidden">
+                <div class="marquee marquee-duration-60 marquee-reverse flex shrink-0 items-center justify-center gap-5">
+                  {secondList.map(({ data: { title, image } }) => (
+                    <IntegrationCard
+                      className={`${fluidContainer ? "rounded-xl" : "rounded-t-xl"}`}
+                      image={image!}
+                      name={title}
+                    />
+                  ))}
+                </div>
+                <div
+                  class="marquee marquee-duration-60 marquee-reverse flex shrink-0 items-center justify-center gap-5"
+                  aria-hidden="true"
+                >
+                  {secondList.map(({ data: { title, image } }) => (
+                    <IntegrationCard
+                      className={`${fluidContainer ? "rounded-xl" : "rounded-t-xl"}`}
+                      image={image!}
+                      name={title}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div class="container">
+        <div
+          class={`${!hideBackground && "overflow-hidden rounded-xl border border-border bg-body pt-10 md:pt-20"}`}
+        >
+          <div class="row">
+            <div class="col-12 text-center" data-aos="fade-up-sm">
+              <div class="px-5 md:px-10">
+                {title && largeHeading ? (
+                  <h1 class="has-gradient mb-6" set:html={markdownify(title)} />
+                ) : (
+                  <h2 class="has-gradient mb-6" set:html={markdownify(title)} />
+                )}
+                {description && (
+                  <p
+                    class="text-lg/[inherit] opacity-80"
+                    set:html={markdownify(description)}
+                  />
+                )}
+
+                {button && button.enable && (
+                  <AnimatedAnchor
+                    className="btn-primary mt-11"
+                    link={button.link}
+                    label={button.label}
+                  />
+                )}
+
+                <div
+                  aria-hidden="true"
+                  class="rotate-animation pointer-events-none absolute left-4/6 top-44 -z-10 h-80 w-[550px] -translate-x-1/2 rounded-full from-secondary via-secondary/80 via-60% to-dark/0 opacity-60 blur-[120px] bg-linear-to-l"
+                />
+              </div>
+            </div>
+            <div
+              class="col-12 pt-20"
+              data-aos="fade-up-sm"
+              data-aos-delay={200}
+            >
+              <div class="marquee-wrapper flex gap-5 overflow-hidden">
+                <div class="marquee marquee-duration-60 flex shrink-0 items-center justify-center gap-5">
+                  {firstList.map(({ data: { title, image } }) => (
+                    <IntegrationCard image={image!} name={title} />
+                  ))}
+                </div>
+                <div
+                  class="marquee marquee-duration-60 flex shrink-0 items-center justify-center gap-5"
+                  aria-hidden="true"
+                >
+                  {firstList.map(({ data: { title, image } }) => (
+                    <IntegrationCard image={image!} name={title} />
+                  ))}
+                </div>
+              </div>
+              <div class="marquee-wrapper mt-5 flex gap-5 overflow-hidden">
+                <div class="marquee marquee-duration-60 marquee-reverse flex shrink-0 items-center justify-center gap-5">
+                  {secondList.map(({ data: { title, image } }) => (
+                    <IntegrationCard
+                      className={`${fluidContainer ? "rounded-xl" : "rounded-t-xl"}`}
+                      image={image!}
+                      name={title}
+                    />
+                  ))}
+                </div>
+                <div
+                  class="marquee marquee-duration-60 marquee-reverse flex shrink-0 items-center justify-center gap-5"
+                  aria-hidden="true"
+                >
+                  {secondList.map(({ data: { title, image } }) => (
+                    <IntegrationCard
+                      className={`${fluidContainer ? "rounded-xl" : "rounded-t-xl"}`}
+                      image={image!}
+                      name={title}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+</section>

@@ -1,0 +1,47 @@
+---
+import TestimonialCard from "./TestimonialCard.astro";
+
+interface Props {
+  direction?: string;
+  list: {
+    content: string;
+    customer: {
+      avatar: string;
+      name: string;
+      designation: string;
+    };
+  }[];
+}
+
+const { list, direction } = Astro.props;
+---
+
+<div
+  class="marquee-wrapper on-hover-pause-animation flex gap-5 overflow-hidden lg:flex-col">
+  <div
+    class={`marquee ${direction === "reverse" ? "marquee-reverse" : "marquee-vertical"}  marquee-duration-120 flex shrink-0 lg:flex-col items-center justify-center gap-5`}>
+    {
+      list.map(({ content, customer }) => (
+        <TestimonialCard
+          content={content}
+          image={customer.avatar}
+          name={customer.name}
+          designation={customer.designation}
+        />
+      ))
+    }
+  </div>
+  <div
+    class={`marquee  ${direction === "reverse" ? "marquee-reverse" : "marquee-vertical"} marquee-duration-120 flex shrink-0 lg:flex-col items-center justify-center gap-5`}
+    aria-hidden="true">
+    {
+      list.map(({ content, customer }) => (
+        <TestimonialCard
+          content={content}
+          image={customer.avatar}
+          name={customer.name}
+        />
+      ))
+    }
+  </div>
+</div>

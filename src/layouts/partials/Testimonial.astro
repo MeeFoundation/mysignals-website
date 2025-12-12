@@ -1,0 +1,72 @@
+---
+import AnimatedAnchor from "@/components/AnimatedAnchor.astro";
+import AnimatedTestimonialList from "@/components/AnimatedTestimonialList.astro";
+import FeaturedTestimonial from "@/components/FeaturedTestimonial.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const { featuredCustomer, hideCTAButton } = Astro.props;
+
+const sectionData = await getListPage("testimonialSection", "testimonial");
+if (!sectionData.data.enable) {
+  return null;
+}
+let { title, button, subtitle, list } = sectionData.data;
+// Exclude featured item from list
+list = list.filter((item) => !item.featured);
+
+let firstList = list.slice(0, Math.floor(list.length / 2));
+firstList = [...firstList, ...firstList];
+let secondList = list.slice(Math.floor(list.length / 2), list.length);
+secondList = [...secondList, ...secondList].reverse();
+let thirdList = list.slice(Math.floor(list.length / 2), list.length);
+thirdList = [...thirdList, ...thirdList];
+---
+
+<section class="section overflow-hidden">
+  <div class="container">
+    <div class="row">
+      {/* Heading */}
+      <div class="mx-auto text-center lg:col-8 xl:col-9" data-aos="fade-up-sm">
+        {
+          subtitle && (
+            <p
+              class="mb-4 text-xl/[inherit] font-medium text-blue-400"
+              set:html={markdownify(subtitle)}
+            />
+          )
+        }
+
+        {title && <h2 class="has-gradient" set:html={markdownify(title)} />}
+      </div>
+
+      {/* Featured Testimonial */}
+      <FeaturedTestimonial featuredCustomer={featuredCustomer} />
+
+      {/* Regular Testimonial */}
+      <div class="col-12 text-center">
+        <div
+          class="row gy-4 relative mt-14 flex overflow-hidden lg:gx-4 before:pointer-events-none before:absolute before:top-0 before:z-10 before:h-full before:w-10 before:bg-linear-to-r before:from-body before:to-transparent before:content-[''] after:pointer-events-none after:absolute after:bottom-0 after:right-0 after:h-full after:w-10 after:bg-linear-to-r after:from-transparent after:to-body after:content-[''] before:md:w-40 after:md:w-40 lg:h-[800px] before:lg:h-40 before:lg:w-full before:lg:bg-linear-to-b after:lg:h-40 after:lg:w-full after:lg:bg-linear-to-b">
+          <div class="lg:col-4">
+            <AnimatedTestimonialList list={firstList} />
+          </div>
+          <div class="lg:col-4">
+            <AnimatedTestimonialList list={secondList} />
+          </div>
+          <div class="lg:col-4">
+            <AnimatedTestimonialList list={thirdList} />
+          </div>
+        </div>
+        {
+          !hideCTAButton && button && button.enable && (
+            <AnimatedAnchor
+              label={button.label}
+              link={button.link}
+              className="btn-primary mt-10"
+            />
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

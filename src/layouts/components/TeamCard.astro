@@ -1,0 +1,69 @@
+---
+import { markdownify } from "@/lib/utils/textConverter";
+import ImageMod from "./ImageMod.astro";
+import DynamicIcon from "@/helpers/DynamicIcon";
+
+interface Props {
+  name: string;
+  avatar: string;
+  content: string;
+  designation: string;
+  className?: string;
+  social: {
+    name: string;
+    icon: string;
+    url: string;
+  }[];
+}
+
+const { avatar, social, name, designation, content, className } = Astro.props;
+---
+
+<div class={` min-h-full ${(className && className) || ""}`}>
+  <div class="h-20 w-20 overflow-hidden rounded-full">
+    <ImageMod
+      src={avatar}
+      class="rounded-full"
+      alt={name || "avatar of team member"}
+    />
+  </div>
+  {
+    name && (
+      <h3
+        class="tracking-none mt-4 text-base md:text-lg"
+        set:html={markdownify(name)}
+      />
+    )
+  }
+  {designation && <p class="opacity-70" set:html={markdownify(designation)} />}
+  {content && <p class="mt-4 opacity-80" set:html={markdownify(content)} />}
+
+  {
+    social && (
+      <ul class="mt-4 mb-6 flex gap-3">
+        {social.map((social) => (
+          <li>
+            <a
+              aria-label={social.name}
+              href={social.url}
+              target="_blank"
+              rel="noopener noreferrer nofollow">
+              <span class="sr-only">{social.name}</span>
+              {social.icon.startsWith("/images/") ? (
+                <div class="relative flex h-12 w-12 items-center justify-center after:absolute after:inset-0 after:rounded-md after:bg-linear-to-b after:from-white/10 after:to-slate-800/25 after:transition-all after:duration-300 after:content-[''] hover:after:scale-y-[-1]">
+                  <ImageMod
+                    class="h-4 w-4 object-cover"
+                    src={social.icon}
+                    alt={`icon related to ${social.name}`}
+                  />
+                </div>
+              ) : (
+                <DynamicIcon className="inline-block" icon={social.icon} />
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>

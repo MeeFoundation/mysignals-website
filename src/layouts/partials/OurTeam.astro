@@ -1,0 +1,44 @@
+---
+import TeamCard from "@/components/TeamCard.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const sectionData = await getListPage("ourTeamSection", "our-team");
+if (!sectionData.data.enable) {
+  return null;
+}
+const { title, description, list } = sectionData.data;
+---
+
+<section class="section">
+  <div class="container">
+    <div class="row">
+      <div class="lg:col-10" data-aos="fade-up-sm">
+        {
+          title && (
+            <h2 class="has-gradient mb-4" set:html={markdownify(title)} />
+          )
+        }
+        {
+          description && (
+            <p
+              class="text-lg/[inherit] opacity-80"
+              set:html={markdownify(description)}
+            />
+          )
+        }
+      </div>
+      <div class="col-12 pt-20" data-aos="fade-up-sm" data-aos-delay="200">
+        <div class="row gx-4 gy-6">
+          {
+            list?.map((item) => (
+              <div class="lg:col-4">
+                <TeamCard {...item} />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

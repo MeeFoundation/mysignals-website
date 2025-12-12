@@ -1,0 +1,88 @@
+html {
+  @apply text-base-sm md:text-base;
+}
+
+body {
+  @apply bg-body text-base font-normal leading-[1.8em] text-text antialiased;
+}
+
+* {
+  -webkit-font-smoothing: inherit;
+}
+
+p {
+  br {
+    @apply max-lg:hidden;
+  }
+}
+
+.h1,
+h1,
+.h2,
+h2,
+.h3,
+h3,
+.h4,
+h4,
+.h5,
+h5,
+.h6,
+h6 {
+  @apply font-primary font-medium;
+
+  &:not(.tracking-none) {
+    @apply tracking-[-2.5px];
+  }
+
+  br {
+    @apply max-lg:hidden;
+  }
+
+  &.has-gradient {
+    @apply from-white to-text-dark bg-clip-text bg-gradient-to-b;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+h1,
+.h1 {
+  @apply text-h1-sm leading-[1.15em] md:text-h1;
+}
+
+h2,
+.h2 {
+  @apply text-h2-sm leading-[1.15em] md:text-h2;
+}
+
+h3,
+.h3 {
+  @apply text-h3-sm leading-[1.3em] md:text-h3;
+}
+
+h4,
+.h4 {
+  @apply text-h4 leading-[1.3em];
+}
+
+h5,
+.h5 {
+  @apply text-h5 leading-[1.3em];
+}
+
+h6,
+.h6 {
+  @apply text-h6 leading-[1.3em];
+}
+
+b,
+strong {
+  @apply font-semibold;
+}
+
+code {
+  @apply after:border-none;
+}
+
+blockquote > p {
+  @apply my-0!;
+}

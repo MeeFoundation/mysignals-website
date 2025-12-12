@@ -1,0 +1,74 @@
+---
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const sectionData = await getListPage("changelogSection", "changelog");
+if (!sectionData.data.enable) {
+  return null;
+}
+
+const changelogPage = Astro.url.pathname.startsWith("/changelog");
+const { title, description, list } = sectionData.data;
+
+---
+
+<section class="section">
+  <div class="container">
+    <div class="row">
+      <div
+        class={`${changelogPage ? "xl:col-6" : "xl:col-7"} mx-auto text-center lg:col-9`}
+        data-aos="fade-up-sm">
+        {
+          title && (
+            <h1 class="has-gradient mb-6" set:html={markdownify(title)} />
+          )
+        }
+        {
+          description && (
+            <p
+              class="text-lg/[inherit] opacity-80"
+              set:html={markdownify(description)}
+            />
+          )
+        }
+      </div>
+      <div
+        class="col-12 mx-auto pt-20 space-y-6"
+        data-aos="fade-up-sm"
+        data-aos-delay="200">
+        {
+          list?.map((item) => (
+            <div class="rounded-xl border border-border px-7 md:px-14 py-8 md:py-16 backdrop-blur-2xl">
+              <div class="row gy-4 justify-between">
+                <div class="col-auto">
+                  {item.date && (
+                    <p
+                      class="text-lg opacity-70"
+                      set:html={markdownify(item.date)}
+                    />
+                  )}
+                </div>
+                {item.content && (
+                  <div class="lg:col-7">
+                    <span
+                      class="mb-6 inline-block rounded-full border border-black bg-linear-to-r from-primary to-slate-800 px-5 py-1.5"
+                      set:html={item.version}
+                    />
+                    <h2
+                      class="h5 tracking-none mb-4 font-bold"
+                      set:html={item.title}
+                    />
+                    <div
+                      class="content prose-p:text-lg/[inherit]"
+                      set:html={markdownify(item.content, true)}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

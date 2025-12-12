@@ -1,0 +1,17 @@
+{
+  "main": [
+    {
+      "name": "Home",
+      "url": "/"
+    },
+    {
+      "name": "Spec",
+      "url": "/spec/"
+    }
+  ],
+  "footer": [],
+  "company": [],
+  "product": [],
+  "resources": [],
+  "services": []
+}

@@ -1,0 +1,196 @@
+---
+import AnimatedAnchor from "@/components/AnimatedAnchor.astro";
+import ImageMod from "@/components/ImageMod.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const { content, largeHeading } = Astro.props;
+
+const sectionData = await getListPage(
+  "pricingCompareSection",
+  "pricing-compare"
+);
+
+if (!sectionData.data.enable) {
+  return null;
+}
+
+let { title, description, plans, plans_features } = sectionData.data;
+// Override default blog data (Title, Subtitle & Description) with props if provided
+if (content) {
+  ({ title, description } = content);
+}
+---
+
+<section class="section">
+  <div class="container">
+    <div class="row">
+      <div class="mx-auto text-center lg:col-8 xl:col-7" data-aos="fade-up-sm">
+        {
+          title && largeHeading ? (
+            <h1 class="has-gradient" set:html={markdownify(title)} />
+          ) : (
+            <h2 class="has-gradient" set:html={markdownify(title)} />
+          )
+        }
+        {
+          description && (
+            <p
+              class="text-lg/[inherit] opacity-80"
+              set:html={markdownify(description)}
+            />
+          )
+        }
+      </div>
+      <div class="col-12 pt-20">
+        <div class="row g-0">
+          <div class="lg:col-9 lg:offset-3">
+            <div class="row gx-0">
+              {
+                plans.map((plan, index) => (
+                  <div
+                    class={`col relative pt-5 lg:col-4 ${(index === 1 && "lg:rounded-t-lg lg:border lg:border-b-0 lg:border-border") || ""}`}>
+                    <div class="flex min-h-full flex-col items-center justify-center">
+                      {plan.title && (
+                        <span
+                          class="mb-4 text-lg/none"
+                          set:html={markdownify(plan.title)}
+                        />
+                      )}
+                      {plan.price && (
+                        <strong class="h5 tracking-none font-semibold">
+                          {plan.price}
+                        </strong>
+                      )}
+                      {plan.button && (
+                        <AnimatedAnchor
+                          className="btn-primary max-sm:text-center max-sm:text-xs mt-8"
+                          link={plan.button.link}
+                          label={plan.button.label}
+                        />
+                      )}
+
+                      {index === 1 && (
+                        <div
+                          aria-hidden="true"
+                          class="pointer-events-none absolute -right-4 top-1/2 -z-10 h-[120px] w-[95%] rotate-19 rounded-full from-secondary via-secondary via-60% opacity-60 blur-3xl bg-linear-to-l"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        {
+          plans_features.map(
+            ({ group, list }, index) =>
+              group && (
+                <>
+                  <div class="overflow-x-hidden max-lg:mt-10">
+                    <div class="row g-0">
+                      <div class="border-b border-border text-start text-white lg:col-3">
+                        <div class="flex h-full items-end justify-between px-3 py-3 sm:px-6 sm:py-6 lg:pl-8 lg:pr-2">
+                          <div
+                            class="text-lg font-medium capitalize"
+                            set:html={markdownify(group)}
+                          />
+                        </div>
+                      </div>
+                      <div aria-hidden="true" class="hidden lg:col-9 lg:block">
+                        <div class="row g-0">
+                          <div class="border-b border-border lg:col-4" />
+                          <div
+                            class={`${!(index === 0) ? "lg:h-[120px] lg:border-white/5 lg:bg-dark/50" : "lg:h-[78px] lg:border-border"} lg:col-4 lg:border lg:border-t-0`}
+                          />
+                          <div class="border-b border-border lg:col-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    {list.map((item) => (
+                      <div class="overflow-x-hidden">
+                        <div class="row g-0">
+                          <div class="border-b border-border text-start text-white lg:col-3">
+                            <div class="flex h-full items-center justify-between px-3 py-3 sm:px-6 sm:py-6 lg:pl-8 lg:pr-2">
+                              <div
+                                class="text-xs font-medium capitalize opacity-70 sm:text-base"
+                                set:html={markdownify(item.value)}
+                              />
+                            </div>
+                          </div>
+                          <div class="lg:col-9">
+                            <div class="row g-0">
+                              {!(item.basic === "") && (
+                                <div class="col flex items-center justify-center border-b border-border lg:col-4 mt-1">
+                                  <div class="px-3 py-3 text-[10px] sm:py-6 sm:text-base">
+                                    {item.basic === true ? (
+                                      <ImageMod
+                                        src="/images/icons/svg/check.svg"
+                                        alt="icon"
+                                      />
+                                    ) : item.basic === false ? (
+                                      <ImageMod
+                                        src="/images/icons/svg/cross.svg"
+                                        alt="icon"
+                                      />
+                                    ) : (
+                                      <span>{item.basic}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              {!(item.standard === "") && (
+                                <div class="col flex items-center justify-center border border-t-0 border-border lg:col-4 lg:border-white/5 lg:bg-dark/50">
+                                  <div class="px-3 py-3 text-[10px] sm:py-6 sm:text-base">
+                                    {item.standard === true ? (
+                                      <ImageMod
+                                        src="/images/icons/svg/check.svg"
+                                        alt="icon"
+                                      />
+                                    ) : item.standard === false ? (
+                                      <ImageMod
+                                        src="/images/icons/svg/cross.svg"
+                                        alt="icon"
+                                      />
+                                    ) : (
+                                      <span>{item.standard}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              {!(item.pro === "") && (
+                                <div class="col flex items-center justify-center border-b border-border lg:col-4">
+                                  <div class="px-3 py-3 text-[10px] sm:py-6 sm:text-base">
+                                    {item.pro === true ? (
+                                      <ImageMod
+                                        src="/images/icons/svg/check.svg"
+                                        alt="icon"
+                                      />
+                                    ) : item.pro === false ? (
+                                      <ImageMod
+                                        src="/images/icons/svg/cross.svg"
+                                        alt="icon"
+                                      />
+                                    ) : (
+                                      <span>{item.pro}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

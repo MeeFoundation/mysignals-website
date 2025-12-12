@@ -1,0 +1,80 @@
+---
+import { markdownify } from "@/lib/utils/textConverter";
+import type { CollectionEntry } from "astro:content";
+import { render } from "astro:content";
+import AnimatedAnchor from "./components/AnimatedAnchor.astro";
+import ImageMod from "./components/ImageMod.astro";
+
+type Props = {
+  integration: CollectionEntry<"integration">;
+};
+
+const { integration } = Astro.props;
+const { Content } = await render(integration);
+const { title, description, type, image, button } = integration.data;
+---
+
+<section class="section pt-5">
+  <div class="container">
+    <div
+      class="row gy-4 flex-col-reverse items-start justify-start lg:flex-row">
+      {
+        Content && (
+          <div class="lg:col-8" data-aos="fade-up-sm">
+            <div class="content relative min-h-full overflow-hidden rounded-lg border border-white/5 bg-dark p-9">
+              <Content />
+            </div>
+          </div>
+        )
+      }
+      <div class="lg:col-4" data-aos="fade-up-sm" data-aos-delay="50">
+        <div
+          class="relative min-h-full overflow-hidden rounded-lg border border-white/5 bg-dark p-9">
+          <div class="mb-6 flex items-center gap-4">
+            {
+              image && (
+                <ImageMod
+                  class="h-[70px] w-[70px] object-cover"
+                  src={image}
+                  alt={`icon related to ${title}`}
+                />
+              )
+            }
+            <div>
+              {
+                title && (
+                  <h3
+                    class="tracking-none mb-1 text-xl/snug font-semibold"
+                    set:html={markdownify(title)}
+                  />
+                )
+              }
+              {
+                type && (
+                  <p
+                    class="tracking-none mt-0 opacity-70"
+                    set:html={markdownify(type)}
+                  />
+                )
+              }
+            </div>
+          </div>
+          {
+            description && (
+              <p class="opacity-80" set:html={markdownify(description)} />
+            )
+          }
+          {
+            button && button.enable && (
+              <AnimatedAnchor
+                className="btn-inline mt-8"
+                link={button.link}
+                label={button.label}
+              />
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

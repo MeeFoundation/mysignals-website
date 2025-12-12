@@ -1,0 +1,66 @@
+---
+import ImageMod from "@/components/ImageMod.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const sectionData = await getListPage("customersLogoSection", "customers-logo");
+if (!sectionData.data.enable) {
+  return null;
+}
+
+const { title, list } = sectionData.data;
+---
+
+<section class="section mb-28">
+  <div class="container">
+    <div class="row">
+      <div class="col-12" data-aos="fade-up-sm">
+        <div class="text-center sm:flex">
+          <p
+            class="w-full pb-3 text-center text-2xl/snug font-medium tracking-wide sm:whitespace-nowrap sm:pb-0"
+            set:html={markdownify(title)}
+          />
+        </div>
+      </div>
+      <div class="col-12 pt-14" data-aos="fade-up-sm" data-aos-delay="200">
+        <div
+          class="relative flex gap-x-10 overflow-hidden before:pointer-events-none before:absolute before:left-0 before:z-10 before:h-full before:w-20 before:bg-linear-to-r before:from-body before:to-transparent before:content-[''] after:pointer-events-none after:absolute after:right-0 after:h-full after:w-20 after:bg-linear-to-r after:from-transparent after:to-body after:content-[''] md:gap-x-20 before:md:w-40 after:md:w-40"
+        >
+          <div
+            class="marquee flex shrink-0 items-center justify-center gap-x-10 gap-y-6 opacity-60 md:gap-x-20"
+          >
+            {
+              list?.map((logo) => (
+                <div class="h-10">
+                  <ImageMod
+                    src={logo}
+                    class="h-full object-contain"
+                    alt="brand logo"
+                  />
+                </div>
+              ))
+            }
+          </div>
+          <div
+            class="marquee flex shrink-0 items-center justify-center gap-x-10 gap-y-6 opacity-60 md:gap-x-20"
+            aria-hidden="true"
+          >
+            {
+              list?.map((logo) => (
+                <div class="h-10">
+                  <ImageMod
+                    src={logo}
+                    class="h-full object-contain"
+                    alt="brand logo"
+                  />
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    {/* Overlay */}
+    <div class=""></div>
+  </div>
+</section>

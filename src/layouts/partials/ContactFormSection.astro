@@ -1,0 +1,137 @@
+---
+import ImageMod from "@/components/ImageMod.astro";
+import config from "@/config/config.json";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const { contact_form_action } = config.params;
+
+const contactIndex = await getListPage("contact", "-index");
+if (contactIndex.data.draft) {
+  return Astro.redirect("/404");
+}
+const { contact_form } = contactIndex.data;
+---
+
+<section class="section">
+  <div class="container relative">
+    <div class="row gy-5">
+      <div class="lg:col-5" data-aos="fade-left-sm">
+        <div class="flex min-h-full flex-col justify-between">
+          {
+            contact_form?.title && (
+              <h2
+                class="has-gradient md:mb-6"
+                set:html={markdownify(contact_form.title)}
+              />
+            )
+          }
+          {
+            contact_form?.list && (
+              <div class="mt-10 flex flex-col gap-4 md:gap-8 xl:mt-20">
+                {contact_form.list.map((point) => (
+                  <div class="flex gap-4">
+                    {point.icon && (
+                      <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-b from-white/10 to-slate-800/25">
+                        <ImageMod
+                          class="h-5 w-5"
+                          src={point.icon}
+                          alt={`icon related to ${point.title}`}
+                        />
+                      </div>
+                    )}
+                    <div>
+                      {point.title && (
+                        <h3
+                          class="tracking-none mb-3 text-lg/none"
+                          set:html={markdownify(point.title)}
+                        />
+                      )}
+                      {point.description && (
+                        <p
+                          class="text-lg/none opacity-70"
+                          set:html={markdownify(point.description)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          }
+        </div>
+      </div>
+      <div
+        class="lg:col-7 lg:ps-16"
+        data-aos="fade-left-sm"
+        data-aos-delay="200">
+        <div class="rounded-2xl border border-white/5 bg-dark p-5 md:p-16">
+          <form class="row g-4" action={contact_form_action} method="post">
+            <div class="lg:col-6">
+              <label for="name" class="form-label">
+                First Name <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="name"
+                name="name"
+                class="form-input"
+                required
+                type="text"
+              />
+            </div>
+            <div class="lg:col-6">
+              <label for="email" class="form-label">
+                Email <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="email"
+                name="email"
+                class="form-input"
+                required
+                type="email"
+              />
+            </div>
+            <div class="col-12">
+              <label for="comapny-name" class="form-label">
+                Company Name <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="comapny-name"
+                name="comapny-name"
+                class="form-input"
+                required
+                type="text"
+              />
+            </div>
+            <div class="col-12">
+              <label for="message" class="form-label">
+                Write Message <span class="text-red-500">*</span>
+              </label>
+              <textarea
+                id="message"
+                name="message"
+                class="form-input"
+                required
+                rows="3">
+              </textarea>
+            </div>
+            <div class="col-12">
+              <button
+                type="submit"
+                class="btn rounded-full border-border text-white">
+                <span class="value">
+                  <span data-content="Send Message">Send Message</span>
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-14 right-[15%] -z-10 h-[358px] w-[816px] rotate-[-19deg] rounded-full from-secondary/40 from-40% via-secondary via-60% to-primary opacity-20 blur-[100px] bg-gradient-to-tr lg:opacity-40">
+    </div>
+  </div>
+</section>

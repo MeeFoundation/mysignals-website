@@ -1,0 +1,43 @@
+---
+import AnimatedAnchor from "@/components/AnimatedAnchor.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const sectionData = await getListPage("ctaCareerSection", "career-cta");
+if (!sectionData.data.enable) {
+  return null;
+}
+
+const { title, description, button } = sectionData.data;
+---
+
+<section class="section">
+  <div class="container">
+    <div class="row">
+      <div class="mx-auto text-center lg:col-6" data-aos="fade-up-sm">
+        {
+          title && (
+            <h2 class="has-gradient mb-6" set:html={markdownify(title)} />
+          )
+        }
+        {
+          description && (
+            <p
+              class="text-lg/[inherit] opacity-80"
+              set:html={markdownify(description)}
+            />
+          )
+        }
+        {
+          button && (
+            <AnimatedAnchor
+              className="btn-primary mt-6"
+              link={button.link}
+              label={button.label}
+            />
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

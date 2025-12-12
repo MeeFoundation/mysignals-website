@@ -1,0 +1,15 @@
+---
+import { humanize } from "@/lib/utils/textConverter";
+
+const { title = "", lastModified }: { title?: string; lastModified?: string } =
+  Astro.props;
+---
+
+<section class="section">
+  <div class="container text-center" data-aos="fade-up-sm">
+    <div class="rounded-2xl px-8">
+      <h1 class="h2 md:h1 has-gradient mb-4" set:text={humanize(title)} />
+      <p class="text-lg font-medium opacity-70">Last Updated: {lastModified}</p>
+    </div>
+  </div>
+</section>

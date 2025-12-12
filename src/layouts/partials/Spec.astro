@@ -1,0 +1,287 @@
+---
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+import type { SpecData, SpecListItem } from "@/types/sections.collections";
+
+const sectionData = await getListPage("specSection", "spec");
+if (!sectionData.data.enable) {
+  return null;
+}
+
+const data = sectionData.data;
+
+const getHeadingTag = (level: number) => `h${Math.min(Math.max(level, 2), 6)}`;
+
+const generateId = (text: string) => {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .replace(/<[^>]*>/g, "")
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .trim();
+};
+---
+
+<nav id="toc">
+  <h2>Table of Contents</h2>
+  <ol class="toc">
+    {
+      data.sections?.map((section) => {
+        const sectionId = generateId(section.heading);
+        return (
+          <li class="tocline">
+            <a href={`#${sectionId}`}>
+              {section.number && <span class="secno">{section.number}.</span>}
+              <span set:html={markdownify(section.heading)} />
+            </a>
+            {section.subsections && section.subsections.length > 0 && (
+              <ol>
+                {section.subsections.map((subsection) => {
+                  const subsectionId = generateId(subsection.heading);
+                  return (
+                    <li>
+                      <a href={`#${subsectionId}`}>
+                        {section.number && subsection.number && (
+                          <span class="secno">
+                            {section.number}.{subsection.number}
+                          </span>
+                        )}
+                        <span set:html={markdownify(subsection.heading)} />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>
+
+<div class="head">
+  <h1>{data.title}</h1>
+  <h2 id="subtitle">{data.subtitle}</h2>
+
+  <dl>
+    <dt>This version:</dt>
+    <dd set:html={markdownify(data.versions.thisVersion)} />
+
+    {
+      data.versions?.latestVersion && (
+        <>
+          <dt>Latest published version:</dt>
+          <dd set:html={markdownify(data.versions.latestVersion)} />
+        </>
+      )
+    }
+    {
+      data.versions?.history && (
+        <>
+          <dt>History:</dt>
+          <dd set:html={markdownify(data.versions.history)} />
+        </>
+      )
+    }
+    {
+      typeof data.editors != "undefined" && data.editors.length > 0 && (
+        <>
+          <dt>Editors:</dt>
+          {data.editors.map((editor) => (
+            <dd>{editor}</dd>
+          ))}
+        </>
+      )
+    }
+    {
+      data.feedback && (
+        <>
+          <dt>Feedback:</dt>
+          <dd set:html={markdownify(data.feedback)} />
+        </>
+      )
+    }
+  </dl>
+
+  {
+    data.copyright && (
+      <p class="copyright" set:html={markdownify(data.copyright)} />
+    )
+  }
+  <hr />
+</div>
+
+{
+  data.abstract && (
+    <section id="abstract">
+      <h2>Abstract</h2>
+      <p set:html={markdownify(data.abstract)} />
+    </section>
+  )
+}
+
+{
+  data.status && (
+    <section id="sotd">
+      <h2>Status of This Document</h2>
+      {data.status.content && <p set:html={markdownify(data.status.content)} />}
+      {data.status.boxes &&
+        data.status.boxes.map((box) => (
+          <div class={box.type}>
+            {box.title && <span class="marker">{box.title}</span>}
+            <p set:html={markdownify(box.content)} />
+          </div>
+        ))}
+    </section>
+  )
+}
+
+{
+  data.sections?.map((section) => {
+    const HeadingTag = getHeadingTag(section.level || 2) as any;
+    const sectionId = generateId(section.heading);
+
+    return (
+      <section>
+        <HeadingTag id={sectionId}>
+          {section.number && <span class="secno">{section.number}.</span>}
+          <span set:html={markdownify(section.heading)} />
+        </HeadingTag>
+
+        {section.content && <p set:html={markdownify(section.content)} />}
+
+        {section.lists &&
+          section.lists.map((list) => {
+            if (list.type === "ul") {
+              return (
+                <ul>
+                  {list.items.map((item) => (
+                    <li set:html={markdownify(item as string)} />
+                  ))}
+                </ul>
+              );
+            } else if (list.type === "ol") {
+              return (
+                <ol>
+                  {list.items.map((item) => (
+                    <li set:html={markdownify(item as string)} />
+                  ))}
+                </ol>
+              );
+            } else if (list.type === "dl") {
+              return (
+                <dl>
+                  {list.items.map((item) => (
+                    <>
+                      <dt
+                        set:html={markdownify(
+                          (item as SpecListItem).term || "",
+                        )}
+                      />
+                      <dd
+                        set:html={markdownify(
+                          (item as SpecListItem).definition || "",
+                        )}
+                      />
+                    </>
+                  ))}
+                </dl>
+              );
+            }
+          })}
+
+        {section.code && (
+          <pre>
+            <code set:html={section.code.content} />
+          </pre>
+        )}
+
+        {section.boxes &&
+          section.boxes.map((box) => (
+            <div class={box.type}>
+              {box.title && <span class="marker">{box.title}</span>}
+              <div set:html={markdownify(box.content)} />
+            </div>
+          ))}
+
+        {section.subsections &&
+          section.subsections.map((subsection) => {
+            const SubHeadingTag = getHeadingTag(subsection.level || 3) as any;
+            const subsectionId = generateId(subsection.heading);
+
+            return (
+              <section>
+                <SubHeadingTag id={subsectionId}>
+                  {section.number && subsection.number && (
+                    <span class="secno">
+                      {section.number}.{subsection.number}
+                    </span>
+                  )}
+                  <span set:html={markdownify(subsection.heading)} />
+                </SubHeadingTag>
+                {subsection.content && (
+                  <p set:html={markdownify(subsection.content)} />
+                )}
+
+                {subsection.code && (
+                  <pre>
+                    <code set:html={subsection.code.content} />
+                  </pre>
+                )}
+
+                {subsection.lists &&
+                  subsection.lists.map((list) => {
+                    if (list.type === "ul") {
+                      return (
+                        <ul>
+                          {list.items.map((item) => (
+                            <li set:html={markdownify(item as string)} />
+                          ))}
+                        </ul>
+                      );
+                    } else if (list.type === "ol") {
+                      return (
+                        <ol>
+                          {list.items.map((item) => (
+                            <li set:html={markdownify(item as string)} />
+                          ))}
+                        </ol>
+                      );
+                    } else if (list.type === "dl") {
+                      return (
+                        <dl>
+                          {list.items.map((item) => (
+                            <>
+                              <dt
+                                set:html={markdownify(
+                                  (item as SpecListItem).term || "",
+                                )}
+                              />
+                              <dd
+                                set:html={markdownify(
+                                  (item as SpecListItem).definition || "",
+                                )}
+                              />
+                            </>
+                          ))}
+                        </dl>
+                      );
+                    }
+                  })}
+
+                {subsection.boxes &&
+                  subsection.boxes.map((box) => (
+                    <div class={box.type}>
+                      {box.title && <span class="marker">{box.title}</span>}
+                      <div set:html={markdownify(box.content)} />
+                    </div>
+                  ))}
+              </section>
+            );
+          })}
+      </section>
+    );
+  })
+}

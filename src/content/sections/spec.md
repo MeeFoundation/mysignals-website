@@ -1,0 +1,185 @@
+---
+enable: true
+title: "My Signals"
+
+subtitle: "Editor's Draft: 8 December 2025"
+
+versions:
+  thisVersion: "[https://mysignals.org/spec/](https://mysignals.org/spec/)"
+  latestVersion: "[https://mysignals.org/spec/](https://mysignals.org/spec/)"
+  history: "[https://github.com/MeeFoundation/my-signals-website](https://github.com/MeeFoundation/my-signals-website)"
+
+editors:
+  - "Paul Trevithick (Mee Foundation)"
+
+feedback: "[https://github.com/MeeFoundation/my-signals-website](https://github.com/MeeFoundation/my-signals-website) (pull requests, new issue, open issues)"
+
+copyright: "Copyright © 2025 The Mee Foundation."
+
+abstract: "This document defines a standardized framework for transmitting signals that convey a person's intent to websites and apps."
+
+status:
+  content: ""
+  boxes:
+    - type: "advisement"
+      title: "Work in Progress"
+      content: "This is a draft document and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to cite this document as other than a work in progress."
+
+sections:
+  - number: "1"
+    heading: "Introduction"
+    level: 2
+    content: "*This section is non-normative.*\n\nThe internet has evolved to exhibit a power asymmetry between organizations and individuals--an asymmetry that comes at the expense of the autonomy, agency, and privacy of the individual. The power imbalance between internet technology users and service providers (businesses and governments) has been recognized for some time. It was described over a decade ago by the World Economic Forum [**WEF2014**]:"
+    boxes:
+      - type: "example"
+        title: "World Economic Forum, 2014"
+        content: "An asymmetry of power exists today between institutions and individuals—created by an imbalance in the amount of information about individuals held by, or that is accessible to, industry and governments, and the lack of knowledge and ability of the same individuals to control the use of that information."
+    subsections:
+      - number: "1"
+        heading: "Background"
+        level: 3
+        content: "For the past two decades, hundreds of independent developers, and organized groups have explored different paths to restore the power imbalance we've described. Of particular relevance is work on personal agents and other kinds of \"empowerment\" tools that work \"on the individual's side\" [**ProjectVRM**].\n\nSome of these solutions require the ability for the person to *signal their intent* to websites and apps. The best known example of this is the Global Privacy Control [**GPC**]. The GPC signal is intended to communicate a Do Not Sell or Share request under the California Consumer Privacy Act, and similar state privacy laws that allow users to opt out of data sales or the use of their data for cross-context targeted advertising.\n\nThe GPC signal was implemented by adding a \"Sec-GPC: 1\" field to user agent HTTP header in HTTP Request messages sent to the web server. For example:"
+        code:
+          language: "http"
+          content: "GET /something/here HTTP/2\nHost: example.com\nSec-GPC: 1"
+
+      - number: "2"
+        heading: "Limitations of Current Approaches"
+        level: 3
+        content: "Other solutions could adopt this approach to signaling by adding their own custom `Sec-*` header fields. But doing so presents these disadvantages:"
+        lists:
+          - type: "ul"
+            items:
+              - "Each field adds entropy to the HTTP header which increases the fingerprinting surface area exposed to the network, thus increasing tracking and privacy risk."
+              - "It broadcasts this information to all websites on every request and thus doesn't allow the person's agent (e.g. user agent (browser)) to make decisions about how to respond to website's requests for more detailed data."
+              - "The header field approach only works for websites, not apps."
+              - "The GPC field transmits one scalar value (in this case a single boolean) whereas other signals contain multiple parameters and more structure and complexity."
+
+      - number: "3"
+        heading: "Purpose and Characteristics"
+        level: 3
+        content: "The purpose of My Signals is to define a standardized framework that developers can use for signaling. It has these characteristics:"
+        lists:
+          - type: "ul"
+            items:
+              - "Rather than the agent broadcasting the header to the webserver/app on every request, the webserver/app asks the agent for information. A discovery pattern similar to [**ClientHints**] vs. a broadcast pattern similar to the `User-Agent` HTTP request header field along with each request."
+              - "This discovery pattern reduces the fingerprinting surface area improving privacy characteristics and reducing network traffic."
+              - "It supports structured, multi-parameter signals"
+              - "It includes an optional URL parameter link to a configuration file for more granular information relevant to the signal."
+              - "It is cross-platform, supporting both websites and mobile apps."
+
+      - number: "4"
+        heading: "Use Cases"
+        level: 3
+        content: "The My Signals framework is designed to support a wide range of current and anticipated signaling needs. It:"
+        lists:
+          - type: "ul"
+            items:
+              - "Allows the person to proffer their privacy requirements as contractual terms to websites and apps using IEEE 7012. [**IEEE7012**]."
+              - "Allows the person's wallet-agent to signal to websites/apps (i) their intent to have an age-appropriate internet experience, and optionally (ii) indicate their preferred choice of age credential provider service. [**AgeProtect**]."
+              - "Allows the person's agent to signal which authentication provider(s) they use to log in to sites/apps. This allows a large number of Identity Providers (IdPs) to be supported by the app/site while solving the so-called NASCAR problem. [**NASCAR**]."
+              - "Allows the person's wallet-agent to signal that it supports OpenID SIOPv2 allowing the site/app to display a \"Continue-with-wallet\" button for password-less login. [**SIOPv2**]"
+              - "Could be used to support an alternative implementation of the Global Privacy Control that allows it to conform to My Signals framework. This would afford improved privacy characteristics as well as support for mobile apps."
+
+  - number: "2"
+    heading: "Definitions"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This section will define key terms and concepts used throughout the specification."
+
+  - number: "3"
+    heading: "Sending Signals"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This section will describe the technical implementation for sending signals."
+
+  - number: "4"
+    heading: "My Signals Support Resource"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This section will define the support resource specification."
+
+  - heading: "Legal Effects"
+    level: 2
+    content: "We only need to touch on this topic because legal effects flow down to specific My Signals conforming solutions."
+
+  - heading: "Privacy Considerations"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This section will address privacy implications and considerations."
+
+  - heading: "Security Considerations"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This section will address security implications and considerations."
+
+  - heading: "Automation"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This section will address automation considerations."
+
+  - heading: "Conformance"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This section will define conformance requirements."
+
+  - number: "A"
+    heading: "Implementation Considerations"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This appendix will provide implementation guidance and best practices."
+
+  - number: "B"
+    heading: "Acknowledgements"
+    level: 2
+    boxes:
+      - type: "issue"
+        title: "To be written"
+        content: "This appendix will acknowledge contributors to this specification."
+
+  - number: "C"
+    heading: "References"
+    level: 2
+    subsections:
+      - number: "1"
+        heading: "Normative references"
+        level: 3
+        content: "*None yet*"
+
+      - number: "2"
+        heading: "Informative references"
+        level: 3
+        lists:
+          - type: "dl"
+            items:
+              - term: "[AgeProtect]"
+                definition: "AgeProtect paper. URL: https://ageprotect.org"
+              - term: "[ClientHints]"
+                definition: "URL: https://wicg.github.io/ua-client-hints/"
+              - term: "[GPC]"
+                definition: "Global Privacy Control. URL: https://globalprivacycontrol.org"
+              - term: "[NASCAR]"
+                definition: "The \"NASCAR problem\" in authorization server selection refers to the visual clutter and user confusion when a website presents too many third-party login/identity provider (IdP) buttons (like Google, Facebook, Apple), resembling the crowded sponsorship decals on a NASCAR car. URL: https://apicrazy.com/2014/07/22/nascar-problem-in-authorisation-server-selection/"
+              - term: "[IEEE7012]"
+                definition: "IEEE P7012. URL: https://standards.ieee.org/ieee/7012/7192/"
+              - term: "[SIOPv2]"
+                definition: "URL: https://openid.net/specs/openid-connect-self-issued-v2-1_0.html"
+              - term: "[WEF2014]"
+                definition: "Rethinking Personal Data: Trust and Context in User-Centred Data Ecosystems, World Economic Forum. URL: https://www3.weforum.org/docs/WEF_RethinkingPersonalData_TrustandContext_Report_2014.pdf"
+---

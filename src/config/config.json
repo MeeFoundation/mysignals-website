@@ -1,0 +1,51 @@
+{
+  "site": {
+    "title": "My Signals",
+    "base_url": "https://mysignals.org",
+    "base_path": "/",
+    "trailing_slash": true,
+    "favicon": "/images/favicon.png",
+    "logo": "/images/logo.svg",
+    "logo_width": "124px",
+    "logo_height": "26px",
+    "logo_footer": "/images/logo.svg",
+    "logo_footer_width": "225px",
+    "logo_footer_height": "48px",
+    "logo_text": "Darkrise"
+  },
+
+  "settings": {
+    "pagination": 4,
+    "summary_length": 270,
+    "blog_folder": "blog"
+  },
+
+  "params": {
+    "contact_form_action": "#",
+    "copyright": "This site is hosted by GitHub and is subject to its Privacy Policy and Terms of Service. Content on this site is licensed under a Creative Commons Attribution 4.0 International license. This license does not apply to any logos or marks on this site."
+  },
+
+  "subscription": {
+    "enable": true,
+    "action": "#",
+    "title": "Subscribe to Our Newsletter!",
+    "description": "Stay Informed with Our Latest Security Insights - Subscribe to Our Newsletter!"
+  },
+
+  "google_tag_manager": {
+    "enable": false,
+    "gtm_id": "GTM-XXXXXX"
+  },
+
+  "navigation_button": {
+    "enable": true,
+    "label": "Get Involved",
+    "link": "/#get-involved"
+  },
+
+  "metadata": {
+    "meta_author": "Themefisher",
+    "meta_image": "/images/og-image.png",
+    "meta_description": "SaaS & Startup Template"
+  }
+}

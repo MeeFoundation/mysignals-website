@@ -1,0 +1,81 @@
+.btn {
+  @apply relative inline-flex items-center gap-x-2 overflow-hidden border border-transparent px-4 py-2.5 capitalize no-underline transition [&:not(.btn-inline)]:rounded-full cursor-pointer;
+
+  /* If has icon inside button then maintain padding correctly */
+  &:not(.btn-inline).has-icon {
+    @apply pl-5! pr-2!;
+  }
+
+  /* Button Hidden Text (Text Animation) */
+  .value {
+    @apply relative z-10 overflow-hidden align-middle;
+    span {
+      @apply relative inline-block align-middle transition duration-700;
+      &::after {
+        @apply absolute inset-x-0 top-full h-full w-full content-[attr(data-content)];
+      }
+    }
+  }
+
+  /* Button Hidden Round Shape (Round Shape Animation) */
+  &:not(.btn-inline) {
+    &::after {
+      @apply absolute left-1/2 top-full z-0 h-60 w-60 -translate-x-1/2 rounded-full bg-gradient-to-t from-zinc-800 to-dark transition duration-500 content-[""];
+    }
+  }
+
+  /* Icon Animation */
+  .icon {
+    @apply relative z-10 w-7 overflow-hidden;
+    > span {
+      @apply flex items-start justify-start;
+      > span {
+        @apply flex h-7 min-w-7 items-center justify-center object-contain transition duration-700 ease-in-out;
+        &:last-child {
+        }
+      }
+      svg {
+        @apply inline-block;
+      }
+    }
+  }
+
+  /* On Hover Scale Up Round Shape To fill the container if button is full width */
+  &.full-width:hover::after {
+    @apply scale-[2];
+  }
+  /* On Hover */
+  &:hover {
+    /* Fill Round Shape */
+    &::after {
+      @apply -translate-y-1/2;
+    }
+
+    /* Show Hidden Text */
+    .value span {
+      @apply -translate-y-full;
+    }
+
+    /* Show Hidden Icon */
+    .icon > span > span {
+      @apply -translate-x-full;
+    }
+  }
+}
+
+.btn-sm {
+  @apply px-4 py-1.5 text-base-sm md:text-sm;
+}
+
+.btn-primary {
+  @apply border border-border bg-primary text-white hover:text-white;
+  @apply from-black/0 via-neutral-900/70 via-60% to-neutral-800/80 bg-gradient-to-r;
+}
+
+.btn-inline {
+  @apply border border-transparent bg-transparent p-0 text-white hover:bg-dark/10 hover:text-white;
+}
+
+.btn-outline-transparent {
+  @apply border-border bg-transparent text-white hover:text-white;
+}

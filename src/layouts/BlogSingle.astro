@@ -1,0 +1,56 @@
+---
+import dateFormat from "@/lib/utils/dateFormat";
+import { plainify } from "@/lib/utils/textConverter";
+import { render } from "astro:content";
+import ImageMod from "./components/ImageMod.astro";
+import CallToAction from "./partials/CallToAction1.astro";
+
+const { post } = Astro.props;
+
+const { Content } = await render(post);
+const { title, image, date } = post.data;
+---
+
+<section class="section">
+  <div class="container">
+    <div class="row justify-center">
+      <div class="lg:col-9" data-aos="fade-up-sm">
+        {date && <span class="opacity-70">{dateFormat(date)}</span>}
+        {
+          title && (
+            <h1 class="has-gradient md:h1 h2 tracking-none mb-4 mt-2 font-bold">
+              {plainify(title)}
+            </h1>
+          )
+        }
+      </div>
+      <div
+        class="col-12 pt-10 md:pt-16"
+        data-aos="fade-up-sm"
+        data-aos-delay="200">
+        {
+          image && (
+            <div class="mb-16">
+              <ImageMod
+                src={image}
+                height={500}
+                width={1200}
+                alt={title}
+                class="h-auto w-full rounded-xl object-cover md:h-[700px]"
+                format="webp"
+              />
+            </div>
+          )
+        }
+      </div>
+      <article class="lg:col-8" data-aos="fade-up-sm">
+        <div class="content">
+          <Content />
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Related posts -->
+<CallToAction />

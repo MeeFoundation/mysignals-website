@@ -1,0 +1,29 @@
+---
+import { markdownify } from "@/lib/utils/textConverter";
+import ImageMod from "./ImageMod.astro";
+
+interface Props {
+  image: string;
+  className?: string;
+  name?: string;
+}
+
+const { image, className = "rounded-xl", name } = Astro.props;
+---
+
+<div
+  class={`w-[130px] border border-white/5 bg-dark py-6 ${(className && className) || ""} md:w-[260px]`}>
+  <ImageMod
+    src={image}
+    class="mx-auto h-auto w-14 md:w-16"
+    alt={name || "brand image"}
+  />
+  {
+    name && (
+      <h3
+        class="tracking-none mt-6 text-center text-base font-medium md:text-lg/none"
+        set:html={markdownify(name)}
+      />
+    )
+  }
+</div>

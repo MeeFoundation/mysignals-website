@@ -1,0 +1,97 @@
+---
+import AnimatedAnchor from "@/components/AnimatedAnchor.astro";
+import ImageMod from "@/components/ImageMod.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const contactIndex = await getListPage("contact", "-index");
+if (contactIndex.data.draft) {
+  return Astro.redirect("/404");
+}
+
+const { hero } = contactIndex.data;
+---
+
+{
+  hero && (
+    <section class="section">
+      <div class="container">
+        <div class="row">
+          <div
+            class="mx-auto text-center lg:col-8 xl:col-6"
+            data-aos="fade-up-sm">
+            {hero.title && (
+              <h1 class="has-gradient" set:html={markdownify(hero.title)} />
+            )}
+            {hero?.description && (
+              <p
+                class="mt-6 text-lg/[inherit] opacity-80"
+                set:html={markdownify(hero.description)}
+              />
+            )}
+          </div>
+          <div class="col-12 relative pt-20">
+            <div class="row g-4 justify-center">
+              {hero.list?.map(({ icon, title, description, button }, index) => (
+                <div
+                  class="md:col-6 lg:col-4"
+                  data-aos="fade-up-sm"
+                  data-aos-delay={index * 100}>
+                  <div class="group relative min-h-full overflow-hidden rounded-lg border border-white/5 bg-dark p-9">
+                    {icon && (
+                      <div class="mb-12 flex h-14 w-14 overflow-hidden items-center justify-start rounded-lg bg-linear-to-b from-white/10 to-slate-800/25">
+                        <div class="h-14 w-14 transition duration-500 ease-out group-hover:-translate-y-full flex flex-col items-start">
+                          <div class="min-w-14 flex justify-center items-center min-h-14">
+                            <ImageMod
+                              class="h-7 w-7 object-cover"
+                              src={icon}
+                              alt={`icon related to ${title}`}
+                            />
+                          </div>
+                          <div
+                            class="min-w-14 flex justify-center items-center min-h-14"
+                            aria-hidden="true">
+                            <ImageMod
+                              src={icon}
+                              class="h-7 w-7 object-cover"
+                              alt={`icon related to ${title}`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {title && (
+                      <h3
+                        class="h5 tracking-none mb-4"
+                        set:html={markdownify(title)}
+                      />
+                    )}
+                    {description && (
+                      <p
+                        class="opacity-80"
+                        set:html={markdownify(description)}
+                      />
+                    )}
+
+                    {button && button.enable && (
+                      <AnimatedAnchor
+                        label={button.label}
+                        link={button.link}
+                        className="btn-inline mt-6"
+                        set:html={button.label}
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div
+              aria-hidden="true"
+              class="rotate-animation pointer-events-none absolute -right-10 top-0 -z-10 h-60 w-[550px] -translate-x-2/4 rounded-full from-secondary via-secondary/80 via-60% to-dark/0 opacity-30 blur-[120px] bg-gradient-to-l"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

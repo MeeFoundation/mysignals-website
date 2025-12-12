@@ -1,0 +1,48 @@
+---
+import config from "@/config/config.json";
+import { plainify } from "@/lib/utils/textConverter";
+import "@/styles/w3c-base.css";
+
+export interface Props {
+  title?: string;
+  notFoundPage?: boolean;
+  meta_title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  canonical?: string;
+}
+
+const { title, meta_title, description, image, noindex, canonical } =
+  Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="shortcut icon" href={config.site.favicon} />
+
+    <title>
+      {plainify(meta_title ? meta_title : title ? title : config.site.title)}
+    </title>
+
+    {canonical && <link rel="canonical" href={canonical} item-prop="url" />}
+
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+
+    <meta
+      name="description"
+      content={plainify(
+        description ? description : config.metadata.meta_description,
+      )}
+    />
+
+    <meta name="author" content={config.metadata.meta_author} />
+  </head>
+  <body class="toc-sidebar">
+    <slot />
+  </body>
+</html>

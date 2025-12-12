@@ -1,0 +1,40 @@
+---
+import { markdownify } from "@/lib/utils/textConverter";
+import ImageMod from "./ImageMod.astro";
+
+interface Props {
+  image: string;
+  name: string;
+  content: string;
+  designation?: string;
+  className?: string;
+}
+
+const { image, name, designation, className, content } = Astro.props;
+---
+
+<div
+  class={`border flex flex-col text-start justify-between border-white/5 lg:w-auto w-[410px] min-h-full bg-dark p-6 ${(className && className) || ""}`}>
+  {content && <div set:html={markdownify(content)} />}
+  <div class="mt-10 flex items-center">
+    <ImageMod src={image} class="h-auto w-14" alt={name || "brand image"} />
+    <div class="ml-4">
+      {
+        name && (
+          <h3
+            class="tracking-none text-base md:text-lg"
+            set:html={markdownify(name)}
+          />
+        )
+      }
+      {
+        designation && (
+          <p
+            class="mt-px text-sm opacity-70"
+            set:html={markdownify(designation)}
+          />
+        )
+      }
+    </div>
+  </div>
+</div>

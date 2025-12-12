@@ -1,0 +1,159 @@
+{
+  "main": [
+    {
+      "name": "All Pages",
+      "url": "",
+      "hasMegamenu": true,
+      "children": [
+        {
+          "name": "Landing",
+          "children": [
+            {
+              "name": "Home",
+              "description": "A Colorful Dark World",
+              "url": "/"
+            },
+            {
+              "name": "Elements",
+              "description": "A list of reusable content components",
+              "url": "/elements/"
+            }
+          ]
+        },
+        {
+          "name": "Essentials",
+          "children": [
+            {
+              "name": "About",
+              "url": "/about/"
+            },
+            {
+              "name": "Pricing",
+              "url": "/pricing/"
+            },
+            {
+              "name": "Integrations",
+              "url": "/integration/"
+            },
+            {
+              "name": "Integrations Details",
+              "url": "/integration/intercom/"
+            },
+            {
+              "name": "Feature",
+              "url": "/feature/"
+            },
+            {
+              "name": "Blog",
+              "url": "/blog/"
+            },
+            {
+              "name": "Blog Details",
+              "url": "/blog/post-1/"
+            },
+            {
+              "name": "Changelog",
+              "url": "/changelog/"
+            },
+            {
+              "name": "Contact",
+              "url": "/contact/"
+            },
+            {
+              "name": "Terms",
+              "url": "/terms-conditions/"
+            },
+            {
+              "name": "Privacy",
+              "url": "/privacy-policy/"
+            },
+            {
+              "name": "404",
+              "url": "/404/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "",
+      "url": "",
+      "hasChildren": true,
+      "children": [
+        {
+          "name": "About",
+          "url": "/about/"
+        },
+        {
+          "name": "Pricing",
+          "url": "/pricing/"
+        },
+        {
+          "name": "Integrations",
+          "url": "/integration/"
+        },
+        {
+          "name": "Integrations Details",
+          "url": "/integration/"
+        },
+        {
+          "name": "Feature",
+          "url": "/feature/"
+        },
+        {
+          "name": "Blog",
+          "url": "/blog/"
+        },
+        {
+          "name": "Blog Details",
+          "url": "/"
+        },
+        {
+          "name": "Changelog",
+          "url": "/changelog/"
+        }
+      ]
+    },
+    {
+      "name": "Integrations",
+      "url": "/integration/"
+    },
+    {
+      "name": "Pricing",
+      "url": "/pricing/"
+    },
+    {
+      "name": "Contact",
+      "url": "/contact/"
+    }
+  ],
+  "footer": [
+    { "name": "Privacy Policy", "url": "/privacy-policy/" },
+    { "name": "Terms & Conditions", "url": "/terms-conditions/" }
+  ],
+  "company": [
+    { "name": "About", "url": "/about/" },
+    { "name": "Product Features", "url": "/feature/" },
+    { "name": "Changelog", "url": "/changelog/" },
+    { "name": "Contact", "url": "/contact/" }
+  ],
+  "product": [
+    { "name": "Pricing & Plans", "url": "/pricing/" },
+    { "name": "Product Features", "url": "/feature/" },
+    { "name": "Integration", "url": "/integration/" },
+    { "name": "Integration Details", "url": "/integration/kickstar/" }
+  ],
+  "resources": [
+    { "name": "Blog", "url": "/blog/" },
+    {
+      "name": "Blog Details",
+      "url": "/blog/post-1/"
+    },
+    { "name": "Changelog", "url": "/changelog/" }
+  ],
+  "services": [
+    { "name": "Book A Demo", "url": "/" },
+    { "name": "Contact", "url": "/contact/" },
+    { "name": "404", "url": "/404/" }
+  ]
+}

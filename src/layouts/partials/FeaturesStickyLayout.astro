@@ -1,0 +1,117 @@
+---
+import AnimatedAnchor from "@/components/AnimatedAnchor.astro";
+import ImageMod from "@/components/ImageMod.astro";
+import DynamicIcon from "@/helpers/DynamicIcon";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const { sticky = true } = Astro.props;
+
+const sectionData = await getListPage("featuresSections", "features");
+if (!sectionData.data.enable) {
+  return null;
+}
+
+const features = sectionData.data;
+---
+
+<section class="section">
+  <div class="container">
+    {
+      features.feature_list.map((item, mindex) => {
+        const { title, description, list, images, button } = item;
+
+        return (
+          <div
+            class={`overflow-hidden rounded-3xl border border-border bg-primary ${!sticky ? `mb-10 last:mb-0 ` : `max-lg:mb-10 max-lg:last:mb-0 lg:sticky ` + (mindex === 1 ? "lg:top-40" : "lg:top-[120px]")}`}>
+            <div class="row">
+              <div class="lg:col-6" data-aos="fade-up-sm">
+                <div class="min-h-full rounded-s-3xl py-8 pl-5 pr-4 md:py-16 md:pl-10 md:pr-9 lg:py-36 lg:pl-20 lg:pr-[70px]">
+                  {title && (
+                    <h2
+                      class="has-gradient mb-6"
+                      data-aos="fade-up-sm"
+                      set:html={markdownify(title)}
+                    />
+                  )}
+                  {description && (
+                    <p
+                      class="text-lg/[inherit] opacity-80"
+                      data-aos="fade-up-sm"
+                      data-aos-delay="100"
+                      set:html={markdownify(description)}
+                    />
+                  )}
+                  {list && (
+                    <ul class="mt-10 columns-1 md:columns-2 lg:mt-20">
+                      {list.map((item) => (
+                        <li class="mb-3 text-lg/[inherit] font-medium">
+                          <DynamicIcon
+                            icon="FaCheck"
+                            className="text-yellow-200 -mt-px inline-block mr-2.5 text-base"
+                          />
+                          {markdownify(item)}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {button && button.enable && (
+                    <AnimatedAnchor
+                      label={button.label}
+                      link={button.link}
+                      className="btn-primary mt-6 md:mt-10"
+                    />
+                  )}
+                </div>
+              </div>
+              <div class="lg:col-6">
+                <div class="rounded-3xl bg-body lg:pl-5">
+                  <div class="flex min-h-full items-center px-5 md:justify-center md:px-10">
+                    <div
+                      class="relative py-10 md:w-[60%] lg:w-auto lg:py-20"
+                      data-aos="fade-up-sm"
+                      data-aos-delay="250">
+                      {images?.map((item, index) => {
+                        // Add classes based on every row index number to first & second image
+                        const getClass = (mindex: number, index: number) => {
+                          switch (mindex) {
+                            case 0:
+                              return index === 0 ? "w-full" : "w-[60%] mt-6";
+                            case 1:
+                              return index === 0
+                                ? "w-[76%] "
+                                : "w-[70%] ml-[24%] mt-[-12%]";
+                            case 2:
+                              return index === 0
+                                ? "w-[70%] mx-auto"
+                                : "w-[55%] ml-6 mt-[-20%]";
+                            default:
+                              return index === 0
+                                ? "w-[76%] "
+                                : "w-[70%] ml-[24%] mt-[-12%]";
+                          }
+                        };
+
+                        return (
+                          <ImageMod
+                            src={item}
+                            alt={title}
+                            class={`relative z-10 ${getClass(mindex, index)}`}
+                          />
+                        );
+                      })}
+                      <div
+                        aria-hidden="true"
+                        class="pointer-events-none absolute bottom-px left-2/4 z-0 h-[353px] w-[509px] flex-none -translate-x-2/4 rotate-[-19deg] rounded-full from-secondary/40 via-secondary via-60% to-primary opacity-60 blur-[207px] bg-linear-to-tr"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+</section>

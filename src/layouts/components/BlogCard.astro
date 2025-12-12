@@ -1,0 +1,77 @@
+---
+import config from "@/config/config.json";
+import dateFormat from "@/lib/utils/dateFormat";
+import { plainify } from "@/lib/utils/textConverter";
+import AnimatedAnchor from "./AnimatedAnchor.astro";
+import ImageMod from "./ImageMod.astro";
+
+const {
+  summary_length,
+  blog_folder,
+}: { summary_length: number; blog_folder: string } = config.settings;
+
+const {
+  featuredCardLayout,
+  content: { data, id, body },
+} = Astro.props;
+
+const { title, image, date } = data;
+---
+
+{
+  featuredCardLayout ? (
+    <div class="rounded-lg border border-border bg-dark px-8 py-7 lg:px-16 lg:py-14">
+      <div>
+        {date && <span class="opacity-70">{dateFormat(date)}</span>}
+        {title && (
+          <h3 class="h3 has-gradient tracking-none mb-4 mt-2 font-bold">
+            <a class="hover:text-primary" href={`/${blog_folder}/${id}/`}>
+              {plainify(title)}
+            </a>
+          </h3>
+        )}
+      </div>
+      <div>
+        <ImageMod class="mt-10 w-full rounded-2xl" src={image} alt={title} />
+        <div>
+          {body && (
+            <div class="mt-10">
+              <p class="text-lg opacity-80">
+                {plainify(body?.slice(0, Number(summary_length)))}
+              </p>
+            </div>
+          )}
+          {id && (
+            <div class="mt-10">
+              <AnimatedAnchor
+                label={"Continue Reading"}
+                className="btn-primary"
+                link={`/${blog_folder}/${id}/`}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class="flex flex-col items-center gap-10 rounded-lg border border-border bg-dark px-8 py-7 md:flex-row lg:px-16 lg:py-14">
+      <ImageMod
+        class="w-full rounded-xl md:w-[200px]"
+        src={image}
+        alt={title}
+      />
+      <div>
+        {date && <span class="opacity-70">{dateFormat(date)}</span>}
+        {title && (
+          <h3 class="h5 tracking-none mb-4 mt-2 font-bold">
+            <a
+              class="transition duration-300 hover:opacity-80"
+              href={`/${blog_folder}/${id}/`}>
+              {plainify(title)}
+            </a>
+          </h3>
+        )}
+      </div>
+    </div>
+  )
+}

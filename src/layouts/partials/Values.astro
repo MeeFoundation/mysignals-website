@@ -1,0 +1,84 @@
+---
+import ImageMod from "@/components/ImageMod.astro";
+import { getListPage } from "@/lib/contentParser.astro";
+import { markdownify } from "@/lib/utils/textConverter";
+
+const sectionData = await getListPage("valuesSection", "values");
+if (!sectionData.data.enable) {
+  return null;
+}
+const { title, description, list } = sectionData.data;
+---
+
+<section class="section">
+  <div class="container">
+    <div class="row">
+      <div class="mx-auto text-center lg:col-6" data-aos="fade-up-sm">
+        {
+          title && (
+            <h2 class="has-gradient mb-6" set:html={markdownify(title)} />
+          )
+        }
+        {
+          description && (
+            <p
+              class="text-lg/[inherit] opacity-80"
+              set:html={markdownify(description)}
+            />
+          )
+        }
+      </div>
+      <div class="col-12 pt-20">
+        <div class="row g-4 justify-center">
+          {
+            list?.map((item, index) => (
+              <div
+                class="md:col-6 lg:col-4"
+                data-aos="fade-up-sm"
+                data-aos-delay={index * 100}>
+                <div class="group relative min-h-full overflow-hidden rounded-lg border border-white/5 bg-dark p-9">
+                  {item.icon && (
+                    <div class="mb-12 flex h-14 w-14 overflow-hidden items-center justify-start rounded-lg bg-linear-to-b from-white/10 to-slate-800/25">
+                      <div class="h-14 w-14 transition duration-500 ease-out group-hover:-translate-y-full flex flex-col items-start">
+                        <div class="min-w-14 flex justify-center items-center min-h-14">
+                          <ImageMod
+                            class="h-7 w-7 object-cover"
+                            src={item.icon}
+                            alt={`icon related to ${item.title}`}
+                          />
+                        </div>
+                        <div
+                          class="min-w-14 flex justify-center items-center min-h-14"
+                          aria-hidden="true">
+                          <ImageMod
+                            src={item.icon}
+                            class="h-7 w-7 object-cover"
+                            alt={`icon related to ${item.title}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {item.title && (
+                    <h3
+                      class="tracking-none mb-4 text-xl/snug"
+                      set:html={markdownify(item.title)}
+                    />
+                  )}
+                  {item.description && (
+                    <p
+                      class="opacity-60"
+                      set:html={markdownify(item.description)}
+                    />
+                  )}
+
+                  <div class="pointer-events-none absolute bottom-[-22%] right-[-40%] h-[180px] w-[335px] rotate-[-20deg] from-dark/0 to-slate-800 opacity-0 blur-[83px] transition-opacity duration-300 bg-linear-to-l group-hover:opacity-100" />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
