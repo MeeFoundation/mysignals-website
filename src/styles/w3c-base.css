@@ -733,6 +733,10 @@ pre code,
 code code {
   font-size: 100%;
 }
+pre:has(> code) {
+  background-color: #f7f7f7;
+  padding: 1rem;
+}
 
 pre {
   margin-top: 1em;

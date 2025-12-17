@@ -193,9 +193,7 @@ const generateId = (text: string) => {
           })}
 
         {section.code && (
-          <pre>
-            <code set:html={section.code.content} />
-          </pre>
+          <pre><code set:html={section.code.content} /></code></pre>
         )}
 
         {section.boxes &&
@@ -226,9 +224,7 @@ const generateId = (text: string) => {
                 )}
 
                 {subsection.code && (
-                  <pre>
-                    <code set:html={subsection.code.content} />
-                  </pre>
+                  <pre><code set:html={subsection.code.content} /></code></pre>
                 )}
 
                 {subsection.lists &&
