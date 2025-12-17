@@ -38,7 +38,9 @@ sections:
       - number: "1"
         heading: "Background"
         level: 3
-        content: "For the past two decades, hundreds of independent developers, and organized groups have explored different paths to restore the power imbalance we've described. Of particular relevance is work on personal agents and other kinds of \"empowerment\" tools that work \"on the individual's side\" [**ProjectVRM**].\n\nSome of these solutions require the ability for the person to *signal their intent* to websites and apps. The best known example of this is the Global Privacy Control [**GPC**]. The GPC signal is intended to communicate a Do Not Sell or Share request under the California Consumer Privacy Act, and similar state privacy laws that allow users to opt out of data sales or the use of their data for cross-context targeted advertising.\n\nThe GPC signal was implemented by adding a \"Sec-GPC: 1\" field to user agent HTTP header in HTTP Request messages sent to the web server. For example:"
+        content: "For the past two decades, hundreds of independent developers, and organized groups have explored different paths to restore the power imbalance we've described. Of particular relevance is work on personal agents and other kinds of \"empowerment\" tools that work \"on the individual's side\" [**ProjectVRM**].\n\nSome of these solutions require the ability for the person to *signal their intent* to websites and apps. \n 
+
+The best known example of this is the Global Privacy Control [**GPC**] wherein the \"agent\" is the person's browser. The GPC signal is intended to communicate a Do Not Sell or Share request under the California Consumer Privacy Act, and similar state privacy laws that allow users to opt out of data sales or the use of their data for cross-context targeted advertising.\n\nThe GPC signal was implemented by adding a \"Sec-GPC: 1\" field to user agent HTTP header in HTTP Request messages sent to the web server. For example:"
         code:
           language: "http"
           content: "GET /something/here HTTP/2\nHost: example.com\nSec-GPC: 1"
