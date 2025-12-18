@@ -78,16 +78,26 @@ export const ctaSection2 = defineCollection({
   }),
 });
 
-// Define reusable schemas for spec
 const listItemSchema = z.object({
+  id: z.string().optional(),
   term: z.string().optional(),
   definition: z.string().optional(),
 });
 
-const listSchema = z.object({
-  type: z.enum(["ul", "ol", "dl"]),
-  items: z.union([z.array(z.string()), z.array(listItemSchema)]),
-});
+const listSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("ul"),
+    items: z.array(z.string()),
+  }),
+  z.object({
+    type: z.literal("ol"),
+    items: z.array(z.string()),
+  }),
+  z.object({
+    type: z.literal("dl"),
+    items: z.array(listItemSchema),
+  }),
+]);
 
 const boxSchema = z.object({
   type: z.enum(["note", "example", "issue", "advisement"]),

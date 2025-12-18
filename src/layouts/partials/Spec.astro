@@ -176,6 +176,7 @@ const generateId = (text: string) => {
                   {list.items.map((item) => (
                     <>
                       <dt
+                        id={(item as SpecListItem).id || ""}
                         set:html={markdownify(
                           (item as SpecListItem).term || "",
                         )}
@@ -251,6 +252,7 @@ const generateId = (text: string) => {
                           {list.items.map((item) => (
                             <>
                               <dt
+                                id={(item as SpecListItem).id || ""}
                                 set:html={markdownify(
                                   (item as SpecListItem).term || "",
                                 )}

@@ -64,7 +64,7 @@ The best known example of this is the Global Privacy Control [**GPC**] wherein t
         lists:
           - type: "ul"
             items:
-              - "Rather than the agent broadcasting the header to the webserver/app on every request, the webserver/app asks the agent for information. A discovery pattern similar to [**ClientHints**] vs. a broadcast pattern similar to the `User-Agent` HTTP request header field along with each request."
+              - "Rather than the agent broadcasting the header to the webserver/app on every request, the webserver/app asks the agent for information. A discovery pattern similar to [[**ClientHints**]](#ref-clienthints) vs. a broadcast pattern similar to the `User-Agent` HTTP request header field along with each request."
               - "This discovery pattern reduces the fingerprinting surface area improving privacy characteristics and reducing network traffic."
               - "It supports structured, multi-parameter signals"
               - "It includes an optional URL parameter link to a configuration file for more granular information relevant to the signal."
@@ -77,10 +77,10 @@ The best known example of this is the Global Privacy Control [**GPC**] wherein t
         lists:
           - type: "ul"
             items:
-              - "Allows the person to proffer their privacy requirements as contractual terms to websites and apps using IEEE 7012. [**IEEE7012**]."
-              - "Allows the person's wallet-agent to signal to websites/apps (i) their intent to have an age-appropriate internet experience, and optionally (ii) indicate their preferred choice of age credential provider service. [**AgeProtect**]."
-              - "Allows the person's agent to signal which authentication provider(s) they use to log in to sites/apps. This allows a large number of Identity Providers (IdPs) to be supported by the app/site while solving the so-called NASCAR problem. [**NASCAR**]."
-              - "Allows the person's wallet-agent to signal that it supports OpenID SIOPv2 allowing the site/app to display a \"Continue-with-wallet\" button for password-less login. [**SIOPv2**]"
+              - "Allows the person to proffer their privacy requirements as contractual terms to websites and apps using IEEE 7012. [[**IEEE7012**]](#ref-ieee7012)."
+              - "Allows the person's wallet-agent to signal to websites/apps (i) their intent to have an age-appropriate internet experience, and optionally (ii) indicate their preferred choice of age credential provider service. [[**AgeProtect**]](#ref-ageprotect)."
+              - "Allows the person's agent to signal which authentication provider(s) they use to log in to sites/apps. This allows a large number of Identity Providers (IdPs) to be supported by the app/site while solving the so-called NASCAR problem. [[**NASCAR**]](#ref-nascar)."
+              - "Allows the person's wallet-agent to signal that it supports OpenID SIOPv2 allowing the site/app to display a \"Continue-with-wallet\" button for password-less login. [[**SIOPv2**]](#ref-siopv2)."
               - "Could be used to support an alternative implementation of the Global Privacy Control that allows it to conform to My Signals framework. This would afford improved privacy characteristics as well as support for mobile apps."
 
   - number: "2"
@@ -171,17 +171,24 @@ The best known example of this is the Global Privacy Control [**GPC**] wherein t
           - type: "dl"
             items:
               - term: "[AgeProtect]"
+                id: "ref-ageprotect"
                 definition: "AgeProtect paper. URL: https://ageprotect.org"
               - term: "[ClientHints]"
+                id: "ref-clienthints"
                 definition: "URL: https://wicg.github.io/ua-client-hints/"
               - term: "[GPC]"
+                id: "ref-gpc"
                 definition: "Global Privacy Control. URL: https://globalprivacycontrol.org"
               - term: "[NASCAR]"
+                id: "ref-nascar"
                 definition: "The \"NASCAR problem\" in authorization server selection refers to the visual clutter and user confusion when a website presents too many third-party login/identity provider (IdP) buttons (like Google, Facebook, Apple), resembling the crowded sponsorship decals on a NASCAR car. URL: https://apicrazy.com/2014/07/22/nascar-problem-in-authorisation-server-selection/"
               - term: "[IEEE7012]"
+                id: "ref-ieee7012"
                 definition: "IEEE P7012. URL: https://standards.ieee.org/ieee/7012/7192/"
               - term: "[SIOPv2]"
+                id: "ref-siopv2"
                 definition: "URL: https://openid.net/specs/openid-connect-self-issued-v2-1_0.html"
               - term: "[WEF2014]"
+                id: "ref-wef2014"
                 definition: "Rethinking Personal Data: Trust and Context in User-Centred Data Ecosystems, World Economic Forum. URL: https://www3.weforum.org/docs/WEF_RethinkingPersonalData_TrustandContext_Report_2014.pdf"
 ---
