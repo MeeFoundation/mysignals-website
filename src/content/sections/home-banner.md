@@ -3,7 +3,7 @@ enable: true
 # Banner
 note: ""
 title: "Signal your intent"
-description: MySignals is a standardized framework for expressing a person's intent to websites and apps.
+description: A framework to send signals from a person’s agent to a website/app.
 
 image:
   src: "/images/banner.jpg" # Main Image
