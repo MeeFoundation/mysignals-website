@@ -3,7 +3,7 @@ enable: true
 # Banner
 note: ""
 title: "Signal your intent"
-description: A framework to send signals from a person’s agent to a website/app.
+description: An introductory handshake between a person’s agent and a website/app.
 
 image:
   src: "/images/banner.jpg" # Main Image
