@@ -2,7 +2,7 @@
 enable: true
 title: "MySignals"
 
-subtitle: "Editor's Draft: 8 December 2025"
+subtitle: "Editor's Draft: 22 December 2025"
 
 versions:
   thisVersion: "[https://mysignals.org/spec/](https://mysignals.org/spec/)"
