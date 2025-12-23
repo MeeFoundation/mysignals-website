@@ -29,7 +29,7 @@ sections:
   - number: "1"
     heading: "Introduction"
     level: 2
-    content: "*This section is non-normative.*\n\nThe internet has evolved to exhibit a power asymmetry between organizations and individuals--an asymmetry that comes at the expense of the autonomy, agency, and privacy of the individual. The power imbalance between internet technology users and service providers (businesses and governments) has been recognized for some time. It was described over a decade ago by the World Economic Forum [**WEF2014**]:"
+    content: "*This section is non-normative.*<p/>The internet has evolved to exhibit a power asymmetry between organizations and individuals--an asymmetry that comes at the expense of the autonomy, agency, and privacy of the individual. The power imbalance between internet technology users and service providers (businesses and governments) has been recognized for some time. It was described over a decade ago by the World Economic Forum [**WEF2014**]:"
     boxes:
       - type: "example"
         title: "World Economic Forum, 2014"
@@ -38,8 +38,8 @@ sections:
       - number: "1"
         heading: "Background"
         level: 3
-        content: "For the past two decades, hundreds of independent developers, and organized groups have explored different paths to restore the power imbalance we've described. Of particular relevance is work on personal agents and other kinds of “empowerment” tools that work \"on the individual's side\" [**ProjectVRM**]. Some of these solutions require the ability for the person to *signal their intent* to websites and apps.<p/>
-        The best known example of this is the Global Privacy Control [[**GPC**]](#ref-gpc) wherein the \"agent\" is the person's browser. The GPC signal is intended to communicate a Do Not Sell or Share request under the California Consumer Privacy Act, and similar state privacy laws that allow users to opt out of data sales or the use of their data for cross-context targeted advertising.\n\nThe GPC signal was implemented by adding a \"Sec-GPC: 1\" field to user agent HTTP header in HTTP Request messages sent to the web server. For example:"
+        content: "For the past two decades, hundreds of independent developers, and organized groups have explored different paths to restore the power imbalance we've described. Of particular relevance is work on personal agents and other kinds of “empowerment” tools that work \"on the individual's side\" [**ProjectVRM**]. Instead of passively accepting whatever the service provider offers, MySignals is like shaking hands with a service provider before you interact with them. During this process both parties exchange signals to negotiate an experience that works for both. This digital handshake is conducted between your agent and the service provider’s website/app.<p/>
+        The simplest example of this is the Global Privacy Control [[**GPC**]](#ref-gpc) wherein the \"agent\" is the person's browser. The GPC signal is communicates person's Do Not Sell or Share request to the service provider. This signale is legally binding under the California Consumer Privacy Act, and similar state privacy laws that allow users to opt out of data sales or the use of their data for cross-context targeted advertising. The GPC signal was implemented by adding a \"Sec-GPC: 1\" field to user agent HTTP header in HTTP Request messages sent to the web server. For example:"
         code:
           language: "http"
           content: "GET /something/here HTTP/2\nHost: example.com\nSec-GPC: 1"
@@ -59,7 +59,7 @@ sections:
       - number: "3"
         heading: "Purpose and Characteristics"
         level: 3
-        content: "The purpose of MySignals is to define a standardized framework that developers can use for signaling. It has these characteristics:"
+        content: "The purpose of MySignals is to define a standardized framework for an introductory handshake process between a person's agent and a service provider's site/app. It has these characteristics:"
         lists:
           - type: "ul"
             items:
