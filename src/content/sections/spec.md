@@ -85,7 +85,7 @@ sections:
 
               - "IdP: Tell the service provider which IdP (identity provider(s)) you use. [[**NASCAR**]](#ref-nascar)."
 
-              - "SIOPv2: Tell the service provider that your agent supports OpenID SIOPv2 allowing the site/app to display a "Continue-with-wallet" button for password-less login. [[**SIOPv2**]](#ref-siopv2)."
+              - "SIOPv2: Tell the service provider that your agent supports OpenID SIOPv2 allowing the site/app to display a Continue-with-wallet button for password-less login. [[**SIOPv2**]](#ref-siopv2)."
 
               - "PDN: Give the service provider your Personal Data Network endpoint to allow you to manage the personal information they hold about you."
 
