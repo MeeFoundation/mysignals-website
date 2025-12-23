@@ -71,22 +71,22 @@ sections:
       - number: "4"
         heading: "Use Cases"
         level: 3
-        content: "The MySignals framework is designed to support a wide range of current and anticipated handshaking/signaling needs. Use cases include:"
+        content: "The MySignals framework is designed to support a range of current and anticipated handshaking/signaling needs. Use cases include:"
         lists:
           - type: "ul"
             items:
-              - "**Privacy**: Provide legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternate implementation of the Global Privacy Control"
+              - "**Privacy**: Provide legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternate implementation of the Global Privacy Control."
               - "**MyTerms**: Negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using IEEE 7012. [[**IEEE7012**]](#ref-ieee7012)."
 
               - "**AgeProtect**: Signal the need for an age-appropriate experience from the service provider, and tell them which age verification and consent management endpoints you use. [[**AgeProtect**]](#ref-ageprotect)."
 
               - "**Id**: Tell the service provider who you are. Give them a (self-sovereign) digital identifier."
 
-              - "**IdP**: Tell the service provider which IdP (identity provider(s)) you use. [[**NASCAR**]](#ref-nascar)."
+              - "**IdP**: Tell the service provider which IdP (identity provider(s)) you use. This solves the [[**NASCAR**]](#ref-nascar) problem."
 
               - "**SIOPv2**: Tell the service provider that your agent supports OpenID SIOPv2 allowing their site/app to display a “Continue with wallet” button for password-less login. [[**SIOPv2**]](#ref-siopv2)."
 
-              - "**PDN**: Give the service provider your Personal Data Network endpoint to allow you to manage the personal information they hold about you."
+              - "**PDN**: Give the service provider your Personal Data Network endpoint to allow you to manage the personal information the provider holds about you."
 
   - number: "2"
     heading: "Definitions"
