@@ -38,7 +38,7 @@ sections:
       - number: "1"
         heading: "Background"
         level: 3
-        content: "For the past two decades, hundreds of independent developers, and organized groups have explored different paths to restore the power imbalance we've described. Of particular relevance is work on personal agents and other kinds of \"empowerment\" tools that work \"on the individual's side\" [**ProjectVRM**].\n\nSome of these solutions require the ability for the person to *signal their intent* to websites and apps.<p/>
+        content: "For the past two decades, hundreds of independent developers, and organized groups have explored different paths to restore the power imbalance we've described. Of particular relevance is work on personal agents and other kinds of “empowerment” tools that work \"on the individual's side\" [**ProjectVRM**]. Some of these solutions require the ability for the person to *signal their intent* to websites and apps.<p/>
         The best known example of this is the Global Privacy Control [[**GPC**]](#ref-gpc) wherein the \"agent\" is the person's browser. The GPC signal is intended to communicate a Do Not Sell or Share request under the California Consumer Privacy Act, and similar state privacy laws that allow users to opt out of data sales or the use of their data for cross-context targeted advertising.\n\nThe GPC signal was implemented by adding a \"Sec-GPC: 1\" field to user agent HTTP header in HTTP Request messages sent to the web server. For example:"
         code:
           language: "http"
@@ -72,7 +72,7 @@ sections:
       - number: "4"
         heading: "Use Cases"
         level: 3
-        content: "The My Signals framework is designed to support a wide range of current and anticipated signaling needs. Use cases include:"
+        content: "The MySignals framework is designed to support a wide range of current and anticipated signaling needs. Use cases include:"
         lists:
           - type: "ul"
             items:
@@ -106,7 +106,7 @@ sections:
         content: "This section will describe the technical implementation for sending signals."
 
   - number: "4"
-    heading: "My Signals Support Resource"
+    heading: "MySignals Support Resource"
     level: 2
     boxes:
       - type: "issue"
@@ -115,7 +115,7 @@ sections:
 
   - heading: "Legal Effects"
     level: 2
-    content: "We only need to touch on this topic because legal effects flow down to specific My Signals conforming solutions."
+    content: "We only need to touch on this topic because legal effects flow down to specific MySignals conforming solutions."
 
   - heading: "Privacy Considerations"
     level: 2
