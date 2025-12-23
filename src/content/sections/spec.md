@@ -46,7 +46,7 @@ sections:
       - number: "2"
         heading: "Limitations of Current Approaches"
         level: 3
-        content: "Implementing a handshake using custom `Sec-*` header fields has these disadvantages:"
+        content: "Implementing a handshake using custom `Sec-*` header fields has disadvantages:"
         lists:
           - type: "ul"
             items:
@@ -71,7 +71,7 @@ sections:
       - number: "4"
         heading: "Use Cases"
         level: 3
-        content: "The MySignals framework is designed to support a wide range of current and anticipated signaling needs. Use cases include:"
+        content: "The MySignals framework is designed to support a wide range of current and anticipated handshaking/signaling needs. Use cases include:"
         lists:
           - type: "ul"
             items:
