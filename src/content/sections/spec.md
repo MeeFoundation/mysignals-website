@@ -46,7 +46,7 @@ sections:
       - number: "2"
         heading: "Limitations of Current Approaches"
         level: 3
-        content: "Other solutions could adopt this approach to signaling by adding their own custom `Sec-*` header fields. But doing so has these disadvantages:"
+        content: "Adding custom `Sec-*` header fields has these disadvantages:"
         lists:
           - type: "ul"
             items:
