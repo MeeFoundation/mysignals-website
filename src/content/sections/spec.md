@@ -2,7 +2,7 @@
 enable: true
 title: "MySignals"
 
-subtitle: "Editor's Draft: 22 December 2025"
+subtitle: "Editor's Draft: 25 December 2025"
 
 versions:
   thisVersion: "[https://mysignals.org/spec/](https://mysignals.org/spec/)"
@@ -16,7 +16,7 @@ feedback: "[https://github.com/MeeFoundation/my-signals-website](https://github.
 
 copyright: "Copyright © 2025 The Mee Foundation."
 
-abstract: "This document defines a standardized framework for transmitting signals that convey a person's intent to websites and apps."
+abstract: "This document defines a handshake process wherein a person and a service provider (or other person) exchange signals to negotiate the terms of their interactions. The handshake is conducted between the person's agent and the service provider’s website/app."
 
 status:
   content: ""
@@ -97,12 +97,17 @@ sections:
         content: "This section will define key terms and concepts used throughout the specification."
 
   - number: "3"
-    heading: "Sending Signals"
+    heading: "Handshake Framework"
     level: 2
-    boxes:
-      - type: "issue"
-        title: "To be written"
-        content: "This section will describe the technical implementation for sending signals."
+    content: "This section will describe the handshake process which begins on the person's side"
+    subsections:
+      - number: "1"
+        heading: "Begin MySignals framework (HTTP)"
+        level: 3
+        content: "The user agent MUST insert a Sec-MySignals header set to 1"
+        code:
+          language: "http"
+          content: "GET /something/here HTTP/2\nHost: example.com\nSec-MySignals: 1"
 
   - number: "4"
     heading: "MySignals Support Resource"
