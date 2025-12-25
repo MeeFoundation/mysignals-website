@@ -99,24 +99,24 @@ sections:
   - number: "3"
     heading: "Handshake Framework"
     level: 2
-    content: "This section describes the handshake process."
+    content: "This section describes the three step handshake process over HTTP"
     subsections:
       - number: "1"
-        heading: "Initiate MySignals framework (HTTP)"
+        heading: "Step 1: Initiate MySignals framework"
         level: 3
         content: "The user agent MUST insert a Sec-MySignals header set to 1, for example:"
         code:
           language: "http"
           content: "GET /something/here HTTP/2\nHost: example.com\nSec-MySignals: 1"
       - number: "2"
-        heading: "Acknowlege MySignals framework (HTTP)"
+        heading: "Step 2: Acknowlege MySignals framework"
         level: 3
         content: "The server MUST respond with an Accept header:"
         code:
           language: "http"
           content: "HTTP/1.1 200 OK\nAccept-MySignals: type=<signalType1>; type=<signalType2>"
       - number: "3"
-        heading: "Send specific signal(s) (HTTP)"
+        heading: "Step 3: Send specific signal(s)"
         level: 3
         content: "The user agent MUST send one or more MySignals-specific headers specifying type and configuration. For example:"
         code:
