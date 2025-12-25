@@ -99,15 +99,29 @@ sections:
   - number: "3"
     heading: "Handshake Framework"
     level: 2
-    content: "This section will describe the handshake process which begins on the person's side"
+    content: "This section describes the handshake process."
     subsections:
       - number: "1"
-        heading: "Begin MySignals framework (HTTP)"
+        heading: "Initiate MySignals framework (HTTP)"
         level: 3
-        content: "The user agent MUST insert a Sec-MySignals header set to 1"
+        content: "The user agent MUST insert a Sec-MySignals header set to 1, for example:"
         code:
           language: "http"
           content: "GET /something/here HTTP/2\nHost: example.com\nSec-MySignals: 1"
+      - number: "2"
+        heading: "Acknowlege MySignals framework (HTTP)"
+        level: 3
+        content: "The server MUST respond with an Accept header:"
+        code:
+          language: "http"
+          content: "HTTP/1.1 200 OK\nAccept-MySignals: type=<signalType1>; type=<signalType2>"
+      - number: "3"
+        heading: "Send specific signal(s) (HTTP)"
+        level: 3
+        content: "The user agent MUST send one or more MySignals-specific headers specifying type and configuration. For example:"
+        code:
+          language: "http"
+          content: "GET /something/here HTTP/2\nHost: example.com\nSec-MySignals: type=OpenIDConnect; cfg="https://google.com/pcf.toml"
 
   - number: "4"
     heading: "MySignals Support Resource"
