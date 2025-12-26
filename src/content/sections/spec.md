@@ -62,7 +62,7 @@ sections:
         lists:
           - type: "ul"
             items:
-              - "MySignals uses broadcast pattern, including a generic MySignals field in every GET request, but it relies on a disovery pattern similar to [[**ClientHints**]](#ref-clienthints) wherein the server expresses the set of signaltypes it accepts (using an accept field) and the user agent responds with signals whose signaltype is a member of this set." 
+              - "MySignals uses a broadcast pattern, including a generic MySignals field in every GET request, but it relies on a discovery pattern similar to [[**ClientHints**]](#ref-clienthints) wherein the server expresses the set of signaltypes it accepts (using an accept field) and the user agent responds with signals whose signaltype is a member of this set." 
               - "This discovery pattern reduces the fingerprinting surface area improving privacy characteristics and reducing network traffic."
               - "It supports structured, multi-parameter signals"
               - "It includes an optional URL parameter link to a configuration file for more granular information relevant to the signal."
