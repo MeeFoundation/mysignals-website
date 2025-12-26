@@ -58,7 +58,7 @@ sections:
       - number: "3"
         heading: "Purpose and Characteristics"
         level: 3
-        content: "Instead of passively accepting whatever term a service provider offers, MySignals is like shaking hands with them on mutually agreed terms *before* the person interacts with the provider's site/app. During this process the parties exchange signals to negotiate the terms of an experience that works for both. The handshake is conducted between the person's agent and the service provider’s website/app. The purpose of MySignals is to provide a standardized framework for this introductory handshake process between a person's agent and a service provider's site/app. It has these characteristics:"
+        content: "MySignals is like a person shaking hands with a service provider and agreeing on terms *before* they interact with the provider's site/app. During this process the parties exchange signals to negotiate the terms of an experience that works for both. The handshake is conducted between the person's agent and the service provider’s website/app. The purpose of MySignals is to provide a standardized framework for this introductory handshake process between a person's agent and a service provider's site/app. It has these characteristics:"
         lists:
           - type: "ul"
             items:
