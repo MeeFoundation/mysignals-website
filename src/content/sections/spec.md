@@ -46,7 +46,7 @@ sections:
       - number: "2"
         heading: "Limitations of Current Approaches"
         level: 3
-        content: "Implementing a handshake using custom `Sec-*` header fields has disadvantages:"
+        content: "Implementing a handshake using custom `Sec-*` header field for each type of signal has disadvantages:"
         lists:
           - type: "ul"
             items:
@@ -75,7 +75,7 @@ sections:
         lists:
           - type: "ul"
             items:
-              - "**Privacy**: Provide legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternate implementation of the Global Privacy Control."
+              - "**Privacy**: Provide legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternate implementation of the Global Privacy Control [[**GPC**]](#ref-gpc)."
               - "**MyTerms**: Negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using IEEE 7012. [[**IEEE7012**]](#ref-ieee7012)."
 
               - "**AgeProtect**: Signal the need for an age-appropriate experience from the service provider, and tell them which age verification and consent management endpoints you use. [[**AgeProtect**]](#ref-ageprotect)."
