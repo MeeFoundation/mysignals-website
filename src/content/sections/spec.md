@@ -124,13 +124,6 @@ sections:
           language: "http"
           content: "GET /something/here HTTP/2\nHost: example.com\nSec-MySignals: type=OpenIDConnect; cfg=\"https://google.com/mysignals.toml\""
 
-  - number: "4"
-    heading: "MySignals Support Resource"
-    level: 2
-    boxes:
-      - type: "issue"
-        title: "To be written"
-        content: "This section will define the support resource specification."
 
   - heading: "Legal Effects"
     level: 2
