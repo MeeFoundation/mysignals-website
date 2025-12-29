@@ -58,11 +58,16 @@ sections:
       - number: "3"
         heading: "Purpose and Characteristics"
         level: 3
-        content: "MySignals is a handshake process between  a person's agent and a service provider website/app. It is an extensible communications framework that allows developers to define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. During this handshake each side shares the signaltypes it supports. It has these characteristics:"
+        content: "MySignals is a handshake process between  a person's agent and a service provider website/app. It is an extensible communications framework that allows developers to define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. During this handshake each side conveys the signaltypes it supports. It has these characteristics:"
         lists:
           - type: "ul"
             items:
-              - "MySignals uses a broadcast pattern, including a generic MySignals field in every GET request, but it relies on a discovery pattern similar to [[**ClientHints**]](#ref-clienthints) wherein the server expresses the set of signaltypes it accepts (using an accept field) and the user agent responds with signals whose signaltype is a member of this set." 
+              - "It follows a three step process flow."
+              - "In the first step the agent includes a Sec=MS=1 field in the GET request. This announces that agent supports the MySignals framework."
+              - "In the second step, if the site/app supports MySignals it acknowledges this by including an Accept-MS field that includes the set of the signaltypes it supports (if any)"
+              - "In the third step, the agent includes in the GET request a Sec=MS=... field that includes a subset of the set from step two that are acceptable to the agent."
+              - "If not empty, this subset defines the mutually agreed set of signaltypes that both parties agree to."
+              - "Steps two and three follow a discovery pattern similar to that used in  [[**ClientHints**]](#ref-clienthints)"
               - "This discovery pattern reduces the fingerprinting surface area improving privacy characteristics and reducing network traffic."
               - "It supports structured, multi-parameter signals"
               - "It includes an optional URL parameter link to a configuration file for more granular information relevant to the signal."
