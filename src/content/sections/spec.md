@@ -81,11 +81,12 @@ sections:
           - type: "ul"
             items:
               - "**Privacy**: Provide legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternate implementation of the Global Privacy Control [[**GPC**]](#ref-gpc)."
+
               - "**MyTerms**: Negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using IEEE 7012. [[**IEEE7012**]](#ref-ieee7012)."
 
               - "**AgeProtect**: Signal the need for an age-appropriate experience from the service provider, and tell them which age verification and consent management endpoints you use. [[**AgeProtect**]](#ref-ageprotect)."
 
-              - "**Id**: Tell the service provider who you are. Give them a (self-sovereign) digital identifier."
+              - "**Identity**: Tell the service provider who you are. Give them a (self-sovereign) digital identifier."
 
               - "**IdP**: Tell the service provider which IdP (identity provider(s)) you use. This solves the [[**NASCAR**]](#ref-nascar) problem."
 
