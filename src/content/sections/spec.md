@@ -82,7 +82,7 @@ sections:
             items:
               - "**Privacy**: Provide legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternate implementation of the Global Privacy Control [[**GPC**]](#ref-gpc)."
 
-              - "**MyTerms**: Negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using IEEE 7012. [[**IEEE7012**]](#ref-ieee7012)."
+              - "**MyTerms**: Negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using IEEE P7012. [[**IEEEP7012**]](#ref-ieeeP7012)."
 
               - "**AgeProtect**: Signal the need for an age-appropriate experience from the service provider, and tell them which age verification and consent management endpoints you use. [[**AgeProtect**]](#ref-ageprotect)."
 
@@ -92,12 +92,10 @@ sections:
 
               - "**SIOPv2**: Tell the service provider that your agent supports OpenID SIOPv2 allowing their site/app to display a “Continue with wallet” button for password-less login. [[**SIOPv2**]](#ref-siopv2)."
 
-              - "**PDN**: Give the service provider your Personal Data Network endpoint to allow you to manage the personal information the provider holds about you."
-
   - number: "2"
     heading: "Definitions"
     level: 2
-    content: "To do: add definitions of signaltype, ...."
+    content: "To do: add definitions of signaltype, config URI, Signal Parameters Resource...."
     boxes:
       - type: "issue"
         title: "To be written"
@@ -125,38 +123,68 @@ sections:
       - number: "3"
         heading: "Step 3: Send signal(s)"
         level: 3
-        content: "The user agent MUST send one or more MySignals headers specifying signaltype and configuration. For example if the signaltype is OpenIDConnect:"
+        content: "The user agent MUST send one or more MySignals headers specifying signaltype and a Signal Parameters Resource (SPR) URL. For example if the signaltype is OpenIDConnect and the SPR is \"https://google.com/mysignals.toml\":"
         code:
           language: "http"
-          content: "GET /something/here HTTP/2\nHost: example.com\nSec-MS type=OpenIDConnect; cfg=\"https://google.com/mysignals.toml\""
+          content: "GET /something/here HTTP/2\nHost: example.com\nSec-MS type=OpenIDConnect; SPR=\"https://google.com/mysignals.toml\""
 
-
-  - heading: "Legal Effects"
+  - number: "4"
+    heading: "Signaltypes"
     level: 2
-    content: "We only need to touch on this topic because legal effects flow down to specific MySignals conforming solutions."
+    content: "In step 3 when the agent is sending a specific signaltype, an optional config URI may be included. The value of signaltype MUST be one of:"
+    lists:
+      - type: "ul"
+        items:
+          - "GPCv2 - request to opt-out of sharing/selling their data. Same semantics as the Global Privacy Control [[**GPC**]](#ref-gpc)."
+          - "MyTerms - proffer privacy and data sharing terms using IEEE P7012. [[**IEEEP7012**]](#ref-ieeeP7012)."
+          - "AgeProtectv1 - request an age-appropriate experiece and that their agent implements AgeProtect"
+          - "IdKERI - request to the provided KERI identifier."
+          - "IdP - request to use a this identity provider."
+          - "SIOPv2 - request to log in using OpenID [[**SIOPv2**]](#ref-siopv2)."
 
-  - heading: "Privacy Considerations"
+  - number: "5"
+    heading: "Signal Parameters Resource URL"
+    level: 2
+    content: "In step 3 when the agent is sending a specific signaltype, an optional Signal Parameters Resource (SPR) URL may be included. The SPR URL resolves to a Signal Parameters Resource (SPR)."
+
+  - number: "6"
+    heading: "Signal Parameters Resource (SPR)"
+    level: 2
+    content: "An SPR is a TOML format resource that contains additional parameters to pass with a signal. It has the following required fields:"
+    lists: 
+      - type: "ul"
+        items:
+          - "title - a strong of value \"Signal Parameter Resource\"."
+          - "version - a string indicating the version of the SPR format. MUST be \"v1\"."
+    content: "The rest of the fields are determined by the specifics of the signaltype. Each signaltype has its own section of the SPR (e.g. \"[SIOPv2]\"), followed by zero or more fields and values."
+    content: "Here is an example SPR..."
+
+  - number: "7"
+    heading: "Privacy Considerations"
     level: 2
     boxes:
       - type: "issue"
         title: "To be written"
         content: "This section will address privacy implications and considerations."
 
-  - heading: "Security Considerations"
+  - number: "8"
+    heading: "Security Considerations"
     level: 2
     boxes:
       - type: "issue"
         title: "To be written"
         content: "This section will address security implications and considerations."
 
-  - heading: "Automation"
+  - number: "9"
+    heading: "Automation"
     level: 2
     boxes:
       - type: "issue"
         title: "To be written"
         content: "This section will address automation considerations."
 
-  - heading: "Conformance"
+  - number: "10"
+    heading: "Conformance"
     level: 2
     boxes:
       - type: "issue"
@@ -206,8 +234,8 @@ sections:
               - term: "[NASCAR]"
                 id: "ref-nascar"
                 definition: "The \"NASCAR problem\" in authorization server selection refers to the visual clutter and user confusion when a website presents too many third-party login/identity provider (IdP) buttons (like Google, Facebook, Apple), resembling the crowded sponsorship decals on a NASCAR car. URL: https://apicrazy.com/2014/07/22/nascar-problem-in-authorisation-server-selection/"
-              - term: "[IEEE7012]"
-                id: "ref-ieee7012"
+              - term: "[IEEEP7012]"
+                id: "ref-ieeeP7012"
                 definition: "IEEE P7012. URL: https://standards.ieee.org/ieee/7012/7192/"
               - term: "[SIOPv2]"
                 id: "ref-siopv2"
