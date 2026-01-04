@@ -150,22 +150,19 @@ sections:
   - number: "6"
     heading: "Signal Parameters Resource (SPR)"
     level: 2
-    content: "An SPR is a [[**TOML1.1**]](#ref-toml1.1) format resource that contains additional parameters to pass with a signal. It has the following required fields:"
+    content: "An SPR is a [[**TOML1.1**]](#ref-toml1.1) format resource that contains additional parameters to pass with a signal. It MUST include the '''title''' and '''version''' fields (see below). After these MUST follow one or more sections. The section label MUST be signaltype string (e.g. [SIOPv2]). Each section MUST contain one or more fields and values."
     lists: 
       - type: "ul"
         items:
-          - "title - a strong of value \"Signal Parameter Resource\"."
-          - "version - a string indicating the version of the SPR format. MUST be \"v1\"."
-
-  - number: "7"
-    heading: "Privacy Considerations"
-    level: 2
-    boxes:
-      - type: "issue"
-        title: "To be written"
-        content: "This section will address privacy implications and considerations."
+          - "title - a string of value \"Signal Parameter Resource\"."
+          - "version - a string indicating the version of the SPR format. MUST be \"1.0\"."
 
   - number: "8"
+    heading: "Example SPF Resource"
+    level: 2
+    content: "title = \"Signal Parameter Resource\"<br> version = 1.0<br>[SIOPv2] image - \"https://mee.foundation/continue-with-mee-smartwallet.png\"<br>SIOPAuthorize = \"https://mee.foundation/authorize\""
+
+  - number: "9"
     heading: "Security Considerations"
     level: 2
     boxes:
@@ -173,7 +170,7 @@ sections:
         title: "To be written"
         content: "This section will address security implications and considerations."
 
-  - number: "9"
+  - number: "10"
     heading: "Automation"
     level: 2
     boxes:
@@ -181,7 +178,7 @@ sections:
         title: "To be written"
         content: "This section will address automation considerations."
 
-  - number: "10"
+  - number: "11"
     heading: "Conformance"
     level: 2
     boxes:
