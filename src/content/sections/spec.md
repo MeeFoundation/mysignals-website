@@ -155,8 +155,47 @@ sections:
         items:
           - "\"title\" - a string of value \"Signal Parameters Resource\"."
           - "\"version\" - a string indicating the version of the SPR resource's format. MUST be \"v1\"."
-  
   - number: "7"
+    heading: "JS SDK"
+    level: 2
+    content: "The MySignals JS SDK is a zero-dependency, universal JavaScript/TypeScript library designed to implement the explicit handshake flow of the MySignals privacy protocol on any web page."
+    subsections:
+      - number: "1"
+        heading: "Robust State Machine Orchestration"
+        level: 3
+        content: "The entire handshake process is strictly modeled as a finite state machine, guaranteeing reliable and predictable transitions:\n`IDLE` → `PROBING` → `PROBED` → `SUBMITTING` → `SUBMITTED`\nIf a submission leaves some `CRITICAL` signals pending, the client enters `PARTIALLY_SUBMITTED` instead and loops back through `SUBMITTING` on subsequent `submit()` calls until every critical signal has been delivered, at which point it reaches terminal `SUBMITTED`. Accepted-only top-ups from `PARTIALLY_SUBMITTED` remain in that state.\nErrors elegantly transition the client into an `ERROR` state, capturing the previous state to support clean retry logic and recovery."
+      
+      - number: "2"
+        heading: "Universal Compatibility & Zero Dependencies"
+        level: 3
+        content: "- **Formats**: Published in ESM, CommonJS, and UMD formats.\n- **Environments**: Works seamlessly within modern build tools (Vite, Webpack, Rollup) and natively in the browser via simple `<script>` tags.\n- **Size**: Tiny footprint utilizing native browser APIs like `fetch`."
+      
+      - number: "3"
+        heading: "Smart Storage & Hydration"
+        level: 3
+        content: "Minimize network calls and avoid redundant user prompting. The SDK can automatically persist and revive its handshake state:\n\n- `memory`: Persists for the lifetime of the page.\n- `sessionStorage`: Persists across reloads within the same browser tab.\n- `localStorage`: Long-lived persistence including a smart 24-hour TTL for long-lived consent flows."
+      
+      - number: "4"
+        heading: "Headless Demo Mode"
+        level: 3
+        content: "Integration testing and frontend prototyping are seamless with the built-in `DemoTransport`. Developers can toggle `demo: true` or pass a customized configuration to simulate network latency, expected server signal requirements, and mock responses—all without a real backend."
+      
+      - number: "5"
+        heading: "Configurable Logging"
+        level: 3
+        content: "Observability is built-in. Debugging complex cross-origin handshakes is made easy using the structured logger with varying verbosity levels (`debug`, `info`, `warn`, `error`, `silent`)."
+      
+      - number: "6"
+        heading: "Dynamic Signal Registry"
+        level: 3
+        content: "The SDK maintains a predefined registry of standard privacy and identity signals (e.g., `GPC`, `AgeProtect`, `SiopV2`). However, it gracefully processes any custom signal the server negotiates, classifying them into `CRITICAL` (required) or `ACCEPTED` (optional) priorities based on the protocol requirements."
+      
+      - number: "7"
+        heading: "Cross-Origin Support"
+        level: 3
+        content: "By decoupling the client origin from the backend service, developers can perform the MySignals handshake securely across different domains. The SDK allows attaching credentials/cookies to cross-origin `fetch` requests seamlessly."      
+  
+  - number: "8"
     heading: "Example Signal Parameters Resource"
     level: 2
     content: "The following example shows a SPR containing parameters for the \"SIOPv2\" signaltype. Two URL-valued parameters are \"image\" and \"SIOPAuthorized\"."
@@ -173,7 +212,7 @@ sections:
         }
 
   
-  - number: "8"
+  - number: "9"
     heading: "Privacy Considerations"
     level: 2
     boxes:
@@ -181,7 +220,7 @@ sections:
         title: "To be written"
         content: "This section will address privacy implications and considerations."
 
-  - number: "9"
+  - number: "10"
     heading: "Security Considerations"
     level: 2
     boxes:
@@ -189,7 +228,7 @@ sections:
         title: "To be written"
         content: "This section will address security implications and considerations."
 
-  - number: "10"
+  - number: "11"
     heading: "Automation"
     level: 2
     boxes:
@@ -197,7 +236,7 @@ sections:
         title: "To be written"
         content: "This section will address automation considerations."
 
-  - number: "11"
+  - number: "12"
     heading: "Conformance"
     level: 2
     boxes:
