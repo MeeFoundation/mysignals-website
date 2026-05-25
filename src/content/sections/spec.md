@@ -204,7 +204,7 @@ sections:
         level: 3
         content: "By decoupling the client origin from the backend service, developers can perform the MySignals handshake securely across different domains. The SDK allows attaching credentials/cookies to cross-origin `fetch` requests seamlessly."
 
-        number: "9"
+      - number: "9"
         heading: "Per-Signal Definitions"
         level: 3
         content: "Servers should advertise a `definitionUri` for each signal — the source of truth for what that signal means and what shape its value takes. A `definitionUri` may point to either:\n\n* a JSON Schema document (validated on a server and client-side when a validator is wired), or\n* a human-readable spec page (HTML, Markdown, etc. ).\n\n**Spec rules:**\n\n* Within the `signals` map, `definitionUri` is required for each entry.\n* `definitionUri` is treated as immutable — servers publish new versions at new URLs (e.g., `/schemas/myterms/v2.json`). Clients may cache indefinitely.\n* Client-side validation is advisory by default; the server remains the authoritative validator. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`.\n* If no validator is configured, the SDK skips fetching `definitionUri` entirely (no schema validation, no wasted bandwidth). URIs are still exposed on `SignalRequirement.definitionUri` for documentation UI.\n\n**Probe response body (optional):**"  
