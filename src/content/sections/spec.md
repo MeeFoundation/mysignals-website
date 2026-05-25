@@ -140,13 +140,17 @@ sections:
           - "\"IdKERI\" - proffer the person's KERI AID."
           - "\"IdP\" - request to use a this identity provider."
           - "\"SIOPv2\" - request to log in using OpenID [[**SIOPv2**]](#ref-siopv2)."
-
   - number: "5"
+    heading: "Signal Definitions"
+    level: 2
+    content: "Servers must advertise an immutable definitionUri for each signal within the probe response, pointing either to an informational human-readable spec or a Schema document. Ultimately, all final signal values—which the schemas describe logically—are JSON-encoded into X-MS-${name} headers for transmission over the wire."
+
+  - number: "6"
     heading: "Signal Parameters Resource reference"
     level: 2
     content: "In step 3 when the agent is sending a specific signaltype, an optional URL reference to a Signal Parameters Resource (SPR) MAY be included."
 
-  - number: "6"
+  - number: "7"
     heading: "Signal Parameters Resource (SPR)"
     level: 2
     content: "An SPR is a [[**JSON**]](#ref-json) format resource that contains additional parameters to pass with a signal. It MUST contain the title and version fields. The rest of the fields are determined by the specifics of the signaltype. Each signaltype has its own section of the SPR (e.g. \"[SIOPv2]\") followed by one or more signaltype-specific fields."
@@ -155,47 +159,57 @@ sections:
         items:
           - "\"title\" - a string of value \"Signal Parameters Resource\"."
           - "\"version\" - a string indicating the version of the SPR resource's format. MUST be \"v1\"."
-  - number: "7"
+  - number: "8"
     heading: "JS SDK"
     level: 2
     content: "The MySignals JS SDK is a zero-dependency, universal JavaScript/TypeScript library designed to implement the explicit handshake flow of the MySignals privacy protocol on any web page."
     subsections:
       - number: "1"
-        heading: "Robust State Machine Orchestration"
+        heading: "API Reference"
         level: 3
-        content: "The entire handshake process is strictly modeled as a finite state machine, guaranteeing reliable and predictable transitions:\n`IDLE` → `PROBING` → `PROBED` → `SUBMITTING` → `SUBMITTED`\nIf a submission leaves some `CRITICAL` signals pending, the client enters `PARTIALLY_SUBMITTED` instead and loops back through `SUBMITTING` on subsequent `submit()` calls until every critical signal has been delivered, at which point it reaches terminal `SUBMITTED`. Accepted-only top-ups from `PARTIALLY_SUBMITTED` remain in that state.\nErrors elegantly transition the client into an `ERROR` state, capturing the previous state to support clean retry logic and recovery."
-      
+        content: "The API provides core methods to manage the handshake lifecycle: the `constructor` initializes the `MySignalsClient` with customizable configurations for endpoints, storage strategies, and testing environments. The `init()` method probes the server for `CRITICAL` and `ACCEPTED` signal requirements, transitioning the state from `IDLE` to `PROBED`, while `submit()` delivers the user's privacy signals to the backend, advancing the state through `SUBMITTING` to `SUBMITTED` upon success. Additionally, developers can use `getStatus()` to retrieve a comprehensive snapshot of the current handshake state, pending requirements, and errors, or call `reset()` to completely clear the session state and storage, returning the SDK to `IDLE`."
+        
       - number: "2"
         heading: "Universal Compatibility & Zero Dependencies"
         level: 3
         content: "- **Formats**: Published in ESM, CommonJS, and UMD formats.\n- **Environments**: Works seamlessly within modern build tools (Vite, Webpack, Rollup) and natively in the browser via simple `<script>` tags.\n- **Size**: Tiny footprint utilizing native browser APIs like `fetch`."
-      
+        
       - number: "3"
+        heading: "Robust State Machine Orchestration"
+        level: 3
+        content: "The entire handshake process is strictly modeled as a finite state machine, guaranteeing reliable and predictable transitions:\n`IDLE` → `PROBING` → `PROBED` → `SUBMITTING` → `SUBMITTED`\nIf a submission leaves some `CRITICAL` signals pending, the client enters `PARTIALLY_SUBMITTED` instead and loops back through `SUBMITTING` on subsequent `submit()` calls until every critical signal has been delivered, at which point it reaches terminal `SUBMITTED`. Accepted-only top-ups from `PARTIALLY_SUBMITTED` remain in that state.\nErrors elegantly transition the client into an `ERROR` state, capturing the previous state to support clean retry logic and recovery."  
+      
+      - number: "4"
         heading: "Smart Storage & Hydration"
         level: 3
         content: "Minimize network calls and avoid redundant user prompting. The SDK can automatically persist and revive its handshake state:\n\n- `memory`: Persists for the lifetime of the page.\n- `sessionStorage`: Persists across reloads within the same browser tab.\n- `localStorage`: Long-lived persistence including a smart 24-hour TTL for long-lived consent flows."
       
-      - number: "4"
+      - number: "5"
         heading: "Headless Demo Mode"
         level: 3
         content: "Integration testing and frontend prototyping are seamless with the built-in `DemoTransport`. Developers can toggle `demo: true` or pass a customized configuration to simulate network latency, expected server signal requirements, and mock responses—all without a real backend."
       
-      - number: "5"
+      - number: "6"
         heading: "Configurable Logging"
         level: 3
         content: "Observability is built-in. Debugging complex cross-origin handshakes is made easy using the structured logger with varying verbosity levels (`debug`, `info`, `warn`, `error`, `silent`)."
       
-      - number: "6"
+      - number: "7"
         heading: "Dynamic Signal Registry"
         level: 3
         content: "The SDK maintains a predefined registry of standard privacy and identity signals (e.g., `GPC`, `AgeProtect`, `SiopV2`). However, it gracefully processes any custom signal the server negotiates, classifying them into `CRITICAL` (required) or `ACCEPTED` (optional) priorities based on the protocol requirements."
       
-      - number: "7"
+      - number: "8"
         heading: "Cross-Origin Support"
         level: 3
-        content: "By decoupling the client origin from the backend service, developers can perform the MySignals handshake securely across different domains. The SDK allows attaching credentials/cookies to cross-origin `fetch` requests seamlessly."      
+        content: "By decoupling the client origin from the backend service, developers can perform the MySignals handshake securely across different domains. The SDK allows attaching credentials/cookies to cross-origin `fetch` requests seamlessly."
+
+        number: "9"
+        heading: "Per-Signal Definitions"
+        level: 3
+        content: "Servers should advertise a `definitionUri` for each signal — the source of truth for what that signal means and what shape its value takes. A `definitionUri` may point to either:\n\n* a JSON Schema document (validated on a server and client-side when a validator is wired), or\n* a human-readable spec page (HTML, Markdown, etc. ).\n\n**Spec rules:**\n\n* Within the `signals` map, `definitionUri` is required for each entry.\n* `definitionUri` is treated as immutable — servers publish new versions at new URLs (e.g., `/schemas/myterms/v2.json`). Clients may cache indefinitely.\n* Client-side validation is advisory by default; the server remains the authoritative validator. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`.\n* If no validator is configured, the SDK skips fetching `definitionUri` entirely (no schema validation, no wasted bandwidth). URIs are still exposed on `SignalRequirement.definitionUri` for documentation UI.\n\n**Probe response body (optional):**"  
   
-  - number: "8"
+  - number: "9"
     heading: "Example Signal Parameters Resource"
     level: 2
     content: "The following example shows a SPR containing parameters for the \"SIOPv2\" signaltype. Two URL-valued parameters are \"image\" and \"SIOPAuthorized\"."
@@ -212,7 +226,7 @@ sections:
         }
 
   
-  - number: "9"
+  - number: "10"
     heading: "Privacy Considerations"
     level: 2
     boxes:
@@ -220,7 +234,7 @@ sections:
         title: "To be written"
         content: "This section will address privacy implications and considerations."
 
-  - number: "10"
+  - number: "11"
     heading: "Security Considerations"
     level: 2
     boxes:
@@ -228,7 +242,7 @@ sections:
         title: "To be written"
         content: "This section will address security implications and considerations."
 
-  - number: "11"
+  - number: "12"
     heading: "Automation"
     level: 2
     boxes:
@@ -236,7 +250,7 @@ sections:
         title: "To be written"
         content: "This section will address automation considerations."
 
-  - number: "12"
+  - number: "13"
     heading: "Conformance"
     level: 2
     boxes:
