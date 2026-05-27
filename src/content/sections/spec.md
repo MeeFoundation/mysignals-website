@@ -118,14 +118,14 @@ sections:
         content: "The server MUST respond with an `Accept-MS` header field if it supports the MySignals framework. If it supports the MySignals frameork the `Accept-MS` field MUST specifying one or more supported signaltypes:"
         code:
           language: "http"
-          content: "HTTP/1.1 200 OK\nAccept-MS: type=signaltype1; type=signaltype2; ... type=signaltypeN"
+          content: "HTTP/1.1 200 OK\nAccept-MS: signaltype1;def=https://example.com/signaltype1.json signaltype2;def=https://example.com/signaltype2.json, ... signaltypeN;def=https://example.com/sig-n-doc.html"
       - number: "3"
         heading: "Step 3: Send signal(s)"
         level: 3
         content: "The user agent MUST send one or more MySignals headers specifying the signaltype string value along with an optional Signal Parameters Resource (SPR) URL value. The example below shows a signaltype of \"OpenIDConnect\" and an SPR URL \"https://google.com/mysignals.json\":"
         code:
           language: "http"
-          content: "GET /something/here HTTP/2\nHost: example.com\nSec-MS type=OpenIDConnect; SPR=\"https://google.com/mysignals.json\""
+          content: "GET /something/here HTTP/2\nHost: example.com\nSec-MS OpenIDConnect;def=\"https://google.com/mysignals.json\""
 
   - number: "4"
     heading: "Signaltypes"
@@ -143,7 +143,7 @@ sections:
   - number: "5"
     heading: "Signal Definitions"
     level: 2
-    content: "Servers must advertise an immutable definitionUri for each signal within the probe response, pointing either to an informational human-readable spec or a Schema document. Ultimately, all final signal values—which the schemas describe logically—are JSON-encoded into X-MS-${name} headers for transmission over the wire."
+    content: "Servers must advertise an definition uri for each signal within the probe response, pointing either to an informational human-readable spec or a Schema document. Those definitions must be interpreted by the agent to understand the signal's meaning and value."
 
   - number: "6"
     heading: "Signal Parameters Resource reference"
@@ -207,25 +207,50 @@ sections:
       - number: "9"
         heading: "Per-Signal Definitions"
         level: 3
-        content: "Servers should advertise a `definitionUri` for each signal — the source of truth for what that signal means and what shape its value takes. A `definitionUri` may point to either:\n\n* a JSON Schema document (validated on a server and client-side when a validator is wired), or\n* a human-readable spec page (HTML, Markdown, etc. ).\n\n**Spec rules:**\n\n* Within the `signals` map, `definitionUri` is required for each entry.\n* `definitionUri` is treated as immutable — servers publish new versions at new URLs (e.g., `/schemas/myterms/v2.json`). Clients may cache indefinitely.\n* Client-side validation is advisory by default; the server remains the authoritative validator. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`.\n* If no validator is configured, the SDK skips fetching `definitionUri` entirely (no schema validation, no wasted bandwidth). URIs are still exposed on `SignalRequirement.definitionUri` for documentation UI.\n\n**Probe response body (optional):**"  
-  
-  - number: "9"
-    heading: "Example Signal Parameters Resource"
-    level: 2
-    content: "The following example shows a SPR containing parameters for the \"SIOPv2\" signaltype. Two URL-valued parameters are \"image\" and \"SIOPAuthorized\"."
-    code:
-      language: "json"
-      content: |
-        {
-          "title": "Signal Parameters Resource",
-          "version": "1.0",
-          "SIOPv2": {
-            "image": "https://mee.foundation/continue-with-mee-smartwallet.png",
-            "SIOPAuthorized": "https://mee.foundation/authorize"
-          }
-        }
-
-  
+        subsections:
+          - number: "1"
+            heading: "Definition URI"
+            level: 3
+            content: "Servers should advertise a `definitionUri` for each signal — the source of truth for what that signal means and what shape its value takes.A `definitionUri` may point to either:</p>"
+            lists:
+            - type: "ul"
+              items:
+                - "JSON Schema document (validated on a server and client-side when a validator is wired)"
+                - "human-readable spec page (HTML, Markdown, etc. )"
+          - number: "2"
+            heading: "Spec rules"
+            level: 3
+            content: |
+              Within the `signals` map, `definitionUri` is required for each entry.
+              * `definitionUri` is treated as immutable — servers publish new versions at new URLs (e.g., `/schemas/myterms/v2.json`). Client-side validation is advisory by default; the server remains the authoritative validator. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`.
+              * If no validator is configured, the SDK skips fetching `definitionUri` entirely (no schema validation, no wasted bandwidth). URIs are still exposed on `SignalRequirement.definitionUri` for documentation UI.
+          - number: "3"
+            heading: "Wiring a validator (Ajv example):"
+            level: 3
+            content: "The SDK stays dependency-free by exposing a SchemaValidator interface. Bring your own:"
+            code:
+              language: "ts"
+              content: |
+                import Ajv from 'ajv/dist/2020.js';
+                import { MySignalsClient, type SchemaValidator } from 'mysignals-sdk';
+                
+                const ajv = new Ajv({ strict: false });
+                
+                const validator: SchemaValidator = {
+                  validate(schema, value) {
+                    const v = ajv.compile(schema);
+                    const valid = v(value);
+                    return valid 
+                      ? { valid: true } 
+                      : { valid: false, errors: (v.errors ?? []).map((e) => e.message ?? '') };
+                  },
+                };              
+                
+                const client = new MySignalsClient({ validator, strictValidation: false });
+          - number: "4"
+            heading: "Wire format"
+            level: 3
+            content: "Signal values are JSON-encoded into X-MS-${name} headers. Strings pass through unchanged; objects, booleans, and numbers are JSON.stringify-ed. Schemas describe the value as the developer sees it, not the wire form."
   - number: "10"
     heading: "Privacy Considerations"
     level: 2
