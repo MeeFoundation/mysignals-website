@@ -205,52 +205,53 @@ sections:
         content: "By decoupling the client origin from the backend service, developers can perform the MySignals handshake securely across different domains. The SDK allows attaching credentials/cookies to cross-origin `fetch` requests seamlessly."
 
       - number: "9"
-        heading: "Per-Signal Definitions"
+        heading: "Definition URI"
         level: 3
-        subsections:
-          - number: "1"
-            heading: "Definition URI"
-            level: 3
-            content: "Servers should advertise a `definitionUri` for each signal — the source of truth for what that signal means and what shape its value takes.A `definitionUri` may point to either:</p>"
-            lists:
-            - type: "ul"
-              items:
-                - "JSON Schema document (validated on a server and client-side when a validator is wired)"
-                - "human-readable spec page (HTML, Markdown, etc. )"
-          - number: "2"
-            heading: "Spec rules"
-            level: 3
-            content: |
-              Within the `signals` map, `definitionUri` is required for each entry.
-              * `definitionUri` is treated as immutable — servers publish new versions at new URLs (e.g., `/schemas/myterms/v2.json`). Client-side validation is advisory by default; the server remains the authoritative validator. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`.
-              * If no validator is configured, the SDK skips fetching `definitionUri` entirely (no schema validation, no wasted bandwidth). URIs are still exposed on `SignalRequirement.definitionUri` for documentation UI.
-          - number: "3"
-            heading: "Wiring a validator (Ajv example):"
-            level: 3
-            content: "The SDK stays dependency-free by exposing a SchemaValidator interface. Bring your own:"
-            code:
-              language: "ts"
-              content: |
-                import Ajv from 'ajv/dist/2020.js';
-                import { MySignalsClient, type SchemaValidator } from 'mysignals-sdk';
-                
-                const ajv = new Ajv({ strict: false });
-                
-                const validator: SchemaValidator = {
-                  validate(schema, value) {
-                    const v = ajv.compile(schema);
-                    const valid = v(value);
-                    return valid 
-                      ? { valid: true } 
-                      : { valid: false, errors: (v.errors ?? []).map((e) => e.message ?? '') };
-                  },
-                };              
-                
-                const client = new MySignalsClient({ validator, strictValidation: false });
-          - number: "4"
-            heading: "Wire format"
-            level: 3
-            content: "Signal values are JSON-encoded into X-MS-${name} headers. Strings pass through unchanged; objects, booleans, and numbers are JSON.stringify-ed. Schemas describe the value as the developer sees it, not the wire form."
+        content: |
+          This section describes how the SDK treats signal definitions, including the `definitionUri` field and schema validation.
+          
+          Servers should advertise a `definitionUri` for each signal — the source of truth for what that signal means and what shape its value takes. A `definitionUri` may point to either:
+        lists:
+          - type: "ul"
+            items:
+              - "JSON Schema document (validated on a server and client-side when a validator is wired)"
+              - "human-readable spec page (HTML, Markdown, etc.)"
+      - number: "10"
+        heading: "Spec rules"
+        level: 3
+        content: "Within the `signals` map, `definitionUri` is required for each entry"
+        lists:
+          - type: "ul"
+            items:
+              - "`definitionUri` is treated as immutable — servers publish new versions at new URLs (e.g., `/schemas/myterms/v2.json`). Client-side validation is advisory by default; the server remains the authoritative validator. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`."
+              - "If no validator is configured, the SDK skips fetching `definitionUri` entirely (no schema validation, no wasted bandwidth). URIs are still exposed on `SignalRequirement.definitionUri` for documentation UI."
+      - number: "11"
+        heading: "Wiring a validator (Ajv example):"
+        level: 3
+        content: "The SDK stays dependency-free by exposing a SchemaValidator interface. Bring your own:"
+        code:
+          language: "ts"
+          content: |
+            import Ajv from 'ajv/dist/2020.js';
+            import { MySignalsClient, type SchemaValidator } from 'mysignals-sdk';
+            
+            const ajv = new Ajv({ strict: false });
+            
+            const validator: SchemaValidator = {
+              validate(schema, value) {
+                const v = ajv.compile(schema);
+                const valid = v(value);
+                return valid 
+                  ? { valid: true } 
+                  : { valid: false, errors: (v.errors ?? []).map((e) => e.message ?? '') };
+              },
+            };              
+            
+            const client = new MySignalsClient({ validator, strictValidation: false });
+      - number: "14"
+        heading: "Wire format"
+        level: 3
+        content: "Signal values are JSON-encoded into X-MS-${name} headers. Strings pass through unchanged; objects, booleans, and numbers are JSON.stringify-ed. Schemas describe the value as the developer sees it, not the wire form."
   - number: "10"
     heading: "Privacy Considerations"
     level: 2
