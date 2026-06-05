@@ -1,7 +1,7 @@
 ---
 enable: true
 title: "MySignals"
-subtitle: "Editor's Draft: 30 January 2026"
+subtitle: "Editor's Draft: 05 June 2026"
 meta_title: "MySignals Specification"
 description: "A handshake process wherein a person and a service provider exchange signals to negotiate the terms of their interactions."
 versions:
@@ -13,7 +13,7 @@ editors:
   - "Alexey Pepeskul (Swift Invention)"
 feedback: "[https://github.com/MeeFoundation/my-signals-website](https://github.com/MeeFoundation/my-signals-website) (pull requests, new issue, open issues)"
 copyright: "Copyright © 2025 The Mee Foundation."
-abstract: "This document defines a handshake process wherein a person and a service provider (or other person) exchange signals to negotiate the terms of their interactions. The handshake is conducted between the person's agent and the service provider’s website/app."
+abstract: "This document defines a handshake process wherein a person and a service provider (or other person) exchange signals to negotiate the terms of their interactions. The handshake is conducted between the person's agent and the service provider’s website/app. Signals may be sent on the first request without prior negotiation; discovery of a service provider's supported signals is optional, in-band, and cacheable; and each received signal is acknowledged by the service provider."
 status:
   boxes:
     - type: "advisement"
@@ -23,12 +23,16 @@ status:
 
 ## 1. Introduction
 
-*This section is non-normative.*
+_This section is non-normative._
 
 The internet has evolved to exhibit a power asymmetry between organizations and individuals--an asymmetry that comes at the expense of the autonomy, agency, and privacy of the individual. The power imbalance between internet technology users and service providers (businesses and governments) has been recognized for some time. It was described over a decade ago by the World Economic Forum [**WEF2014**]:
 
 <Callout type="example" title="World Economic Forum, 2014">
-An asymmetry of power exists today between institutions and individuals—created by an imbalance in the amount of information about individuals held by, or that is accessible to, industry and governments, and the lack of knowledge and ability of the same individuals to control the use of that information.
+  An asymmetry of power exists today between institutions and
+  individuals—created by an imbalance in the amount of information about
+  individuals held by, or that is accessible to, industry and governments, and
+  the lack of knowledge and ability of the same individuals to control the use
+  of that information.
 </Callout>
 
 ### 1.1 Background
@@ -54,167 +58,225 @@ Implementing a handshake using custom `Sec-*` header field for each type of sign
 
 ### 1.3 Purpose and Characteristics
 
-MySignals is a handshake process between a person's agent and a service provider website/app. It is an extensible communications framework that allows developers to define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. During this handshake each side conveys the signaltypes it supports. It has these characteristics:
+MySignals is a handshake process between a person's agent and a service provider website/app. It is an extensible communications framework that allows developers to define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. It has these characteristics:
 
-- It follows a three step process flow.
-- In the first step the agent includes a `Sec-MS: 1` field in the GET request. This announces that agent supports the MySignals framework itself.
-- In the second step, if the site/app supports the MySignals framework it acknowledges this by including an Accept-MS field that includes the set of specific signaltypes it supports (if any)
-- In the third step, the agent includes in the GET request a `Sec-MS type=<signaltype>...` field that includes a subset of the set from step two that are acceptable to the agent.
-- If not empty, this subset defines the mutually agreed set of signaltypes that both parties agree to.
-- Steps two and three follow a discovery pattern similar to that used in [[**ClientHints**]](#ref-clienthints)
-- This discovery pattern reduces the fingerprinting surface area thereby improving privacy characteristics and reducing network traffic.
-- It supports structured, multi-parameter signals
-- It includes an optional URL to a "signal parameters resource" that contains parameters relevant to a specicifc signaltype.
-- It supports HTTP/websites. Support for mobile apps anticipated in a future version of this specification.
+- It is **stateless**: every request is interpreted on its own, and a service provider never requires a prior exchange before honouring a signal.
+- An agent MAY send one or more signals **directly**, as `Sec-MS` request headers — each identifying the signal by its **schema URI** (§5) and carrying its payload — without any prior negotiation. A time-sensitive or legally binding signal such as GPCv2 can therefore ride the very first request.
+- **Discovery is optional and in-band.** An agent MAY first probe with a `Sec-MS-Discovery: 1` field; a supporting service provider responds with an `Accept-MS` field listing the schema URIs it supports. The advertisement is cacheable.
+- The service provider **acknowledges** each received signal with a separate `Ack-MS` field reporting `Ack`, `Unknown`, or `BadData` for that signal's schema URI.
+- Discovery follows a pattern similar to that used in [[**ClientHints**]](#ref-clienthints), reducing the fingerprinting surface area and network traffic.
+- It supports structured, multi-parameter signals carried in the payloads.
+- It supports HTTP/websites. Support for mobile apps is anticipated in a future version of this specification.
 
-### 1.4 Use Cases
+## 2. Definitions
+
+A **signaltype** is a human-readable name for a kind of signal a person can send to a service provider (see §4). On the wire a signal is not identified by this name but by its **schema URI** — the URL of the signal's definition (§5). Implementers of this spec MUST use the signaltypes defined in §4. The semantics of each signaltype are defined by an implementer — they are outside of the MySignals spec.
+
+A signal carries a **payload**: value whose shape is described by the signal's schema. The payload's contents and semantics are defined by the signaltype's definition and are out of scope of the MySignals spec.
+
+## 3. Handshake Process
+
+The framework is a stateless exchange of three independent parts: an agent **submits** one or more signals, MAY first **discover** what a service provider supports, and receives a per-signal **acknowledgement**. Discovery is not a prerequisite for submission.
+
+### 3.1 Statelessness
+
+The framework establishes no session. A service provider MUST NOT require a prior probe before honouring a submitted signal, and MUST NOT depend on remembering that any particular agent has probed before. Each request is interpreted on its own. This keeps the protocol correct across CDNs, retries, parallel tabs, and load-balanced origins. Any continuity an agent maintains (for example the SDK's stored handshake state, §6.2) is a purely client-side optimisation, not service-provider state.
+
+### 3.2 Sending signals
+
+An agent submits a signal by including a `Sec-MS` request header whose value is `<schemaUri>;<payload>` — the signal's schema URI (§5), a semicolon, then the payload (a scalar such as a boolean opt-out, or a structured JSON value, or any arbitrary strucuture defined in a schema). One `Sec-MS` header is sent per signal; repeat the header to send several. Signals MAY be sent on the very first request, without any prior discovery:
+
+```http
+GET /page HTTP/2
+Host: example.com
+Sec-MS: https://example.com/defs/gpcv2.json;1
+Sec-MS: https://example.com/defs/myterms-v1.json;{"contract":"P7012-DDA-1"}
+```
+
+```http
+HTTP/1.1 200 OK
+Ack-MS: https://example.com/defs/gpcv2.json=Ack
+Ack-MS: https://example.com/defs/myterms-v1.json=Ack
+```
+
+<Callout type="note" title="Sec- vs X- headers">
+  `Sec-MS` and `Sec-MS-Discovery` are `Sec-` (forbidden) header names that only
+  a user agent may set, so page scripts cannot forge them. That same restriction
+  means scripts cannot *set* them either: the JS SDK uses the equivalent `X-MS`
+  and `X-MS-Discovery` headers (§6.3). A service provider treats the `Sec-MS`
+  and `X-MS` forms identically when processing and acknowledging signals.
+</Callout>
+
+```mermaid
+sequenceDiagram
+    participant A as Agent
+    participant S as Service provider
+    Note over A: Supported set already known (cache or config)
+    A->>S: GET /page + Sec-MS gpcv2.json
+    S-->>A: 200 OK + Ack-MS gpcv2.json=Ack
+```
+
+### 3.3 Discovery (optional phase)
+
+When an agent wants to learn what a service provider supports, it sends an in-band probe — a `Sec-MS-Discovery: 1` field. The probe is per-request and per-context, so it can reflect capabilities that vary by route, region, or authentication state. A supporting service provider responds with an `Accept-MS` field listing the schema URIs it supports, together with HTTP cache directives:
+
+```http
+GET /page HTTP/2
+Host: example.com
+Sec-MS-Discovery: 1
+```
+
+```http
+HTTP/1.1 200 OK
+Accept-MS: https://example.com/defs/gpcv2.json, https://example.com/defs/myterms-v1.json
+Cache-Control: public, max-age=86400
+```
+
+`Accept-MS` is a comma-separated list of schema URIs.
+
+```mermaid
+sequenceDiagram
+    participant A as Agent
+    participant S as Service provider
+    Note over A,S: Discovery via the Sec-MS-Discovery probe
+    A->>S: GET /page + Sec-MS-Discovery 1
+    S-->>A: 200 OK + Accept-MS list + Cache-Control
+    Note over A: Cache advertised set until max-age expires
+```
+
+### 3.4 Acknowledgement
+
+Whenever a request carries one or more `Sec-MS` (or `X-MS`) headers, the response MUST include one `Ack-MS` header for each received signal, mapping that signal's schema URI to exactly one status. As with `Sec-MS`, one header is sent per signal; the headers are not combined into one. The status is one of:
+
+| Status    | Meaning                                                                                                           |
+| --------- | ----------------------------------------------------------------------------------------------------------------- |
+| `Ack`     | The schema URI is recognised, the payload is valid against its definition, and the signal was accepted/processed. |
+| `Unknown` | The service provider does not recognise/support this schema URI.                                                  |
+| `BadData` | The schema URI is recognised, but the payload is malformed or fails its definition schema.                        |
+
+For each received signal the service provider determines the status as follows:
+
+1. If the schema URI is not in the supported set → `Unknown`.
+2. Otherwise decode the payload; if decoding fails → `BadData`.
+3. Otherwise validate the decoded payload against the schema; if validation fails → `BadData`.
+4. Otherwise → `Ack`.
+
+Statuses are mutually exclusive and evaluated independently per signal, so a response can carry a mix of all three across its `Ack-MS` headers. The `Ack-MS` header appears **only when signals were received**: a bare probe (`Sec-MS-Discovery: 1` with no `Sec-MS` signals) produces only the `Accept-MS` advertisement, never an `Ack-MS`. An `Ack-MS` MAY accompany an `Accept-MS` advertisement on the same response when an agent probes and submits in one request.
+
+**Unrecognised schema URI** — the agent learns to stop sending it:
+
+```http
+Sec-MS: https://example.com/defs/siopv2.json;{"client_id":"did:example:123"}
+```
+
+```http
+Ack-MS: https://example.com/defs/siopv2.json=Unknown
+```
+
+**Recognised but invalid** — for example an out-of-range value: GPCv2 expresses a single boolean opt-out, so `2` is not valid and fails its schema:
+
+```http
+Sec-MS: https://example.com/defs/gpcv2.json;2
+```
+
+```http
+Ack-MS: https://example.com/defs/gpcv2.json=BadData
+```
+
+**Mixed batch** — independent evaluation yields one entry per signal:
+
+```http
+Sec-MS: https://example.com/defs/gpcv2.json;1
+Sec-MS: https://example.com/defs/myterms-v1.json;{}
+Sec-MS: https://example.com/defs/siopv2.json;{"client_id":"did:example:123"}
+```
+
+```http
+Ack-MS: https://example.com/defs/gpcv2.json=Ack
+Ack-MS: https://example.com/defs/myterms-v1.json=BadData
+Ack-MS: https://example.com/defs/siopv2.json=Unknown
+```
+
+```mermaid
+sequenceDiagram
+    participant A as Agent
+    participant S as Service provider
+    A->>S: GET /page + one or more Sec-MS signals
+    alt schema URI known and payload valid
+        S-->>A: 200 OK + Ack-MS schemaUri=Ack
+    else schema URI not supported
+        S-->>A: 200 OK + Ack-MS schemaUri=Unknown
+    else payload unparseable or fails schema
+        S-->>A: 200 OK + Ack-MS schemaUri=BadData
+    end
+```
+
+### 3.5 Caching and signal discovery
+
+Discovery is intended to be inexpensive through caching at three layers:
+
+- **Discovery results.** The set of schema URIs advertised in `Accept-MS` MAY change over time and SHOULD therefore be cached with a finite freshness lifetime and revalidation. A service provider SHOULD return standard HTTP caching directives — `Cache-Control` (`max-age`), `ETag`, and optionally `stale-while-revalidate`. An agent SHOULD associate the advertised set with the origin and honour those directives.
+- **Definition resources.** A schema URI is immutable: a revised definition MUST be published at a new URL (for example `/defs/myterms-v2.json`) rather than by mutating the existing resource (§5). Because a definition cannot change in place, an agent MAY cache it indefinitely, and a service provider SHOULD serve it with `Cache-Control: public, max-age=31536000, immutable`.
+- **Agent-side storage.** An agent MAY persist discovery results locally to avoid redundant probes. The JS SDK implements this with selectable `memory`, `sessionStorage`, and `localStorage` (24-hour TTL) strategies (§6.2).
+
+An agent MAY re-request the supported set at any time, including after a prior exchange. Because the protocol is stateless (§3.1), a service provider MUST treat a fresh `Sec-MS-Discovery: 1` probe identically to a first-time request and MUST NOT suppress the advertisement on the basis of an earlier exchange. An agent re-discovers when its cached entry expires, when revalidation against the `ETag` fails, or at its discretion.
+
+<Callout type="issue" title="Open: default TTLs">
+  Default TTLs for the discovery result (versus the immutable definition
+  resources) should be server-configurable.
+</Callout>
+
+```mermaid
+sequenceDiagram
+    participant A as Agent
+    participant S as Service provider
+    Note over A,S: An earlier exchange completed and the cache has since expired
+    A->>S: GET /page + Sec-MS-Discovery 1
+    Note over S: Stateless call
+    S-->>A: 200 OK + updated Accept-MS list + Cache-Control
+    A->>S: GET /page + Sec-MS gpcv2.json
+    S-->>A: 200 OK + Ack-MS gpcv2.json=Ack
+```
+
+## 4. Signaltypes
 
 The MySignals framework is designed to support a range of current and anticipated handshaking/signaling needs. Use cases include:
 
 - **Privacy**: Provide legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternative mechanism to convey the Global Privacy Control [[**GPC**]](#ref-gpc) signal semantic.
 - **MyTerms**: Negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using IEEE P7012. [[**IEEEP7012**]](#ref-ieeeP7012).
-- **AgeProtect**: Signal the need for an age-appropriate experience from the service provider, and tell them which age verification and consent management endpoints you use. [[**AgeProtect**]](#ref-ageprotect).
+- **AgeVerified**: Signal the need for an age-appropriate experience from the service provider, and tell them which age verification and consent management endpoints you use. [[**AgeVerified**]](#ref-ageprotect).
 - **Identity**: Tell the service provider who you are. Give them a (self-sovereign) digital identifier.
 - **KERI-AID**: Proffer your KERI Autonomic identifier.
 - **IdP**: Tell the service provider which IdP (identity provider(s)) you use. This solves the [[**NASCAR**]](#ref-nascar) problem.
 - **SIOPv2**: Tell the service provider that your agent supports OpenID SIOPv2 allowing their site/app to display a “Continue with wallet” button for password-less login. [[**SIOPv2**]](#ref-siopv2).
 
-## 2. Definitions
+## 5. JS SDK
 
-A **signaltype** is string that uniquely specifies a type of signal that can be sent by a person to a service provider. Implementers of this spec MUST use signaltypes defined in section 4 below. The semantics of each signaltype are defined by an implementer--they are outside of the MySignals spec. When a signal of a given signaltype is sent other parameters MAY be sent along with it. The definition and semantics of these parameters are also out of scope of the MySignals spec.
+The MySignals JS SDK is a zero-dependency JavaScript/TypeScript library that implements the handshake flow on any web page. It ships as ESM, CommonJS, and UMD, runs in modern bundlers (Vite, Webpack, Rollup) and directly in the browser via a `<script>` tag, and relies only on native APIs such as `fetch`.
 
-A set of one or more parameters MAY be passed along with a signal by including a reference to a ***Signal Parameters Resource (SPR)*** that contains these parameters.
+### 5.1 API and lifecycle
 
-## 3. Handshake Process
-
-This section describes the three step process when implemented over HTTP.
-
-### 3.1 Step 1: Initiate MySignals Framework
-
-The user agent MUST insert a `Sec-MS` header field with a value of 1, for example:
-
-```http
-GET /something/here HTTP/2
-Host: example.com
-Sec-MS: 1
-```
-
-### 3.2 Step 2: Acknowlege MySignals
-
-The server MUST respond with an `Accept-MS` header field if it supports the MySignals framework. If it supports the MySignals frameork the `Accept-MS` field MUST specifying one or more supported signaltypes:
-
-```http
-HTTP/1.1 200 OK
-Accept-MS: signaltype1;def=https://example.com/signaltype1.json signaltype2;def=https://example.com/signaltype2.json, ... signaltypeN;def=https://example.com/sig-n-doc.html
-```
-
-### 3.3 Step 3: Send signal(s)
-
-The user agent MUST send one or more MySignals headers specifying the signaltype string value along with an optional Signal Parameters Resource (SPR) URL value. The example below shows a signaltype of "OpenIDConnect" and an SPR URL "https://google.com/mysignals.json":
-
-```http
-GET /something/here HTTP/2
-Host: example.com
-Sec-MS OpenIDConnect;def="https://google.com/mysignals.json"
-```
-
-## 4. Signaltypes
-
-In step 3 when the agent is sending a specific signaltype, an optional reference (URL) to a Signal Parameteres Resource MAY be included. The value of signaltype MUST be one of:
-
-- "GPCv2" - request to opt-out of sharing/selling their data. Same semantics as the Global Privacy Control [[**GPC**]](#ref-gpc).
-- "MyTerms" - proffer privacy and data sharing terms using IEEE P7012. [[**IEEEP7012**]](#ref-ieeeP7012).
-- "AgeProtectv1" - request an age-appropriate experiece and that their agent implements AgeProtect
-- "IdKERI" - proffer the person's KERI AID.
-- "IdP" - request to use a this identity provider.
-- "SIOPv2" - request to log in using OpenID [[**SIOPv2**]](#ref-siopv2).
-
-## 5. Signal Definitions
-
-Servers must advertise an definition uri for each signal within the probe response, pointing either to an informational human-readable spec or a Schema document. Those definitions must be interpreted by the agent to understand the signal's meaning and value.
-
-## 6. Signal Parameters Resource reference
-
-In step 3 when the agent is sending a specific signaltype, an optional URL reference to a Signal Parameters Resource (SPR) MAY be included.
-
-## 7. Signal Parameters Resource (SPR)
-
-An SPR is a [[**JSON**]](#ref-json) format resource that contains additional parameters to pass with a signal. It MUST contain the title and version fields. The rest of the fields are determined by the specifics of the signaltype. Each signaltype has its own section of the SPR (e.g. "[SIOPv2]") followed by one or more signaltype-specific fields.
-
-- "title" - a string of value "Signal Parameters Resource".
-- "version" - a string indicating the version of the SPR resource's format. MUST be "v1".
-
-## 8. JS SDK
-
-The MySignals JS SDK is a zero-dependency, universal JavaScript/TypeScript library designed to implement the explicit handshake flow of the MySignals privacy protocol on any web page.
-
-### 8.1 API Reference
-
-The API provides core methods to manage the handshake lifecycle: the `constructor` initializes the `MySignalsClient` with customizable configurations for endpoints, storage strategies, and testing environments. The `init()` method probes the server for `CRITICAL` and `ACCEPTED` signal requirements, transitioning the state from `IDLE` to `PROBED`, while `submit()` delivers the user's privacy signals to the backend, advancing the state through `SUBMITTING` to `SUBMITTED` upon success. Additionally, developers can use `getStatus()` to retrieve a comprehensive snapshot of the current handshake state, pending requirements, and errors, or call `reset()` to completely clear the session state and storage, returning the SDK to `IDLE`.
-
-### 8.2 Universal Compatibility & Zero Dependencies
-
-- **Formats**: Published in ESM, CommonJS, and UMD formats.
-- **Environments**: Works seamlessly within modern build tools (Vite, Webpack, Rollup) and natively in the browser via simple `<script>` tags.
-- **Size**: Tiny footprint utilizing native browser APIs like `fetch`.
-
-### 8.3 Robust State Machine Orchestration
-
-The entire handshake process is strictly modeled as a finite state machine, guaranteeing reliable and predictable transitions:
+`MySignalsClient` exposes a small lifecycle API: `init()` probes the server for `CRITICAL` and `ACCEPTED` signal requirements, `submit()` delivers the user's signals, `getStatus()` returns a snapshot of state, pending requirements, and errors, and `reset()` clears session state and storage. The handshake is modeled as a finite state machine:
 
 `IDLE` → `PROBING` → `PROBED` → `SUBMITTING` → `SUBMITTED`
+Errors move the client to `ERROR`, capturing the previous state for clean retry.
 
-If a submission leaves some `CRITICAL` signals pending, the client enters `PARTIALLY_SUBMITTED` instead and loops back through `SUBMITTING` on subsequent `submit()` calls until every critical signal has been delivered, at which point it reaches terminal `SUBMITTED`. Accepted-only top-ups from `PARTIALLY_SUBMITTED` remain in that state.
+### 5.2 Capabilities
 
-Errors elegantly transition the client into an `ERROR` state, capturing the previous state to support clean retry logic and recovery.
+- **Storage**: persists handshake state in `memory`, `sessionStorage`, or `localStorage` (with a 24-hour TTL) to avoid redundant prompting.
+- **Demo mode**: a built-in `DemoTransport` (`demo: true`) simulates latency, server requirements, and responses with no backend.
+- **Logging**: a structured logger with `debug`, `info`, `warn`, `error`, and `silent` levels.
+- **Cross-origin**: performs the handshake across domains, optionally attaching credentials/cookies to `fetch` requests.
 
-### 8.4 Smart Storage & Hydration
+### 5.3 Signal definitions and validation
 
-Minimize network calls and avoid redundant user prompting. The SDK can automatically persist and revive its handshake state:
+Each entry in the `signals` map carries a required `definitionUri` — the source of truth for what a signal means and what shape its value takes. It may point to a JSON Schema document or a human-readable spec page, and is treated as immutable (publish new versions at new URLs, e.g. `/schemas/myterms/v2.json`).
 
-- `memory`: Persists for the lifetime of the page.
-- `sessionStorage`: Persists across reloads within the same browser tab.
-- `localStorage`: Long-lived persistence including a smart 24-hour TTL for long-lived consent flows.
-
-### 8.5 Headless Demo Mode
-
-Integration testing and frontend prototyping are seamless with the built-in `DemoTransport`. Developers can toggle `demo: true` or pass a customized configuration to simulate network latency, expected server signal requirements, and mock responses—all without a real backend.
-
-### 8.6 Configurable Logging
-
-Observability is built-in. Debugging complex cross-origin handshakes is made easy using the structured logger with varying verbosity levels (`debug`, `info`, `warn`, `error`, `silent`).
-
-### 8.7 Dynamic Signal Registry
-
-The SDK maintains a predefined registry of standard privacy and identity signals (e.g., `GPC`, `AgeProtect`, `SiopV2`). However, it gracefully processes any custom signal the server negotiates, classifying them into `CRITICAL` (required) or `ACCEPTED` (optional) priorities based on the protocol requirements.
-
-### 8.8 Cross-Origin Support
-
-By decoupling the client origin from the backend service, developers can perform the MySignals handshake securely across different domains. The SDK allows attaching credentials/cookies to cross-origin `fetch` requests seamlessly.
-
-### 8.9 Definition URI
-
-This section describes how the SDK treats signal definitions, including the `definitionUri` field and schema validation.
-
-Servers should advertise a `definitionUri` for each signal — the source of truth for what that signal means and what shape its value takes. A `definitionUri` may point to either:
-
-- JSON Schema document (validated on a server and client-side when a validator is wired)
-- human-readable spec page (HTML, Markdown, etc.)
-
-### 8.10 Spec rules
-
-Within the `signals` map, `definitionUri` is required for each entry
-
-- `definitionUri` is treated as immutable — servers publish new versions at new URLs (e.g., `/schemas/myterms/v2.json`). Client-side validation is advisory by default; the server remains the authoritative validator. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`.
-- If no validator is configured, the SDK skips fetching `definitionUri` entirely (no schema validation, no wasted bandwidth). URIs are still exposed on `SignalRequirement.definitionUri` for documentation UI.
-
-### 8.11 Wiring a validator (Ajv example)
-
-The SDK stays dependency-free by exposing a SchemaValidator interface. Bring your own:
+Validation is advisory by default; the server remains authoritative. If no validator is configured the SDK skips fetching `definitionUri`. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`. The SDK stays dependency-free via a `SchemaValidator` interface — bring your own (Ajv example):
 
 ```ts
-import Ajv from 'ajv/dist/2020.js';
-import { MySignalsClient, type SchemaValidator } from 'mysignals-sdk';
+import Ajv from "ajv/dist/2020.js";
+import { MySignalsClient, type SchemaValidator } from "mysignals-sdk";
 
 const ajv = new Ajv({ strict: false });
 
@@ -224,65 +286,86 @@ const validator: SchemaValidator = {
     const valid = v(value);
     return valid
       ? { valid: true }
-      : { valid: false, errors: (v.errors ?? []).map((e) => e.message ?? '') };
+      : { valid: false, errors: (v.errors ?? []).map((e) => e.message ?? "") };
   },
 };
 
 const client = new MySignalsClient({ validator, strictValidation: false });
 ```
 
-### 8.12 Wire format
+On the wire, the SDK sends each signal as an `X-MS` request header (value `<schemaUri>;<payload>`) rather than `Sec-MS`, and probes with `X-MS-Discovery` rather than `Sec-MS-Discovery`: `Sec-` is a forbidden header name that page scripts cannot set, so the `X-MS` and `X-MS-Discovery` headers are the script-accessible equivalents of the canonical user-agent forms (§3.2, §3.3), which service providers honour identically. Payloads are JSON-encoded — strings pass through unchanged; objects, booleans, and numbers are `JSON.stringify`-ed — and schemas describe the value as the developer sees it, not the wire form. The SDK surfaces the service provider's per-signal `Ack-MS` results (`Ack` / `Unknown` / `BadData`, §3.4) to the caller.
 
-Signal values are JSON-encoded into `X-MS-${name}` headers. Strings pass through unchanged; objects, booleans, and numbers are `JSON.stringify`-ed. Schemas describe the value as the developer sees it, not the wire form.
-
-## 10. Privacy Considerations
+## 6. Privacy Considerations
 
 <Callout type="issue" title="To be written">
-This section will address privacy implications and considerations.
+  This section will address privacy implications and considerations.
 </Callout>
 
-## 11. Security Considerations
+## 7. Security Considerations
 
 <Callout type="issue" title="To be written">
-This section will address security implications and considerations.
+  This section will address security implications and considerations.
 </Callout>
 
-## 12. Automation
+## 8. Automation
 
 <Callout type="issue" title="To be written">
-This section will address automation considerations.
+  This section will address automation considerations.
 </Callout>
 
-## 13. Conformance
+## 9. Conformance
 
 <Callout type="issue" title="To be written">
-This section will define conformance requirements.
+  This section will define conformance requirements.
 </Callout>
 
 ## A. Implementation Considerations
 
 <Callout type="issue" title="To be written">
-This appendix will provide implementation guidance and best practices.
+  This appendix will provide implementation guidance and best practices.
 </Callout>
 
 ## B. Acknowledgements
 
 <Callout type="issue" title="To be written">
-This appendix will acknowledge contributors to this specification.
+  This appendix will acknowledge contributors to this specification.
 </Callout>
 
 ## C. References
 
 ### C.1 Normative references
 
-- <span id="ref-json">**[JSON]** JSON spec. URL: https://www.rfc-editor.org/rfc/rfc8259</span>
+- <span id="ref-json">
+    **[JSON]** JSON spec. URL: https://www.rfc-editor.org/rfc/rfc8259
+  </span>
 
 ### C.2 Informative references
 
-- <span id="ref-ageprotect">**[AgeProtect]** AgeProtect paper. URL: https://ageprotect.org</span>
-- <span id="ref-clienthints">**[ClientHints]** URL: https://wicg.github.io/ua-client-hints/</span>
-- <span id="ref-gpc">**[GPC]** Global Privacy Control. URL: https://globalprivacycontrol.org</span>
-- <span id="ref-nascar">**[NASCAR]** The "NASCAR problem" in authorization server selection refers to the visual clutter and user confusion when a website presents too many third-party login/identity provider (IdP) buttons (like Google, Facebook, Apple), resembling the crowded sponsorship decals on a NASCAR car. URL: https://apicrazy.com/2014/07/22/nascar-problem-in-authorisation-server-selection/</span>
-- <span id="ref-ieeeP7012">**[IEEEP7012]** IEEE P7012. URL: https://standards.ieee.org/ieee/7012/7192/</span>
-- <span id="ref-siopv2">**[SIOPv2]** URL: https://openid.net/specs/openid-connect-self-issued-v2-1_0.html</span>
-- <span id="ref-wef2014">**[WEF2014]** Rethinking Personal Data: Trust and Context in User-Centred Data Ecosystems, World Economic Forum. URL: https://www3.weforum.org/docs/WEF_RethinkingPersonalData_TrustandContext_Report_2014.pdf</span>
+- <span id="ref-ageprotect">
+    **[AgeProtect]** AgeProtect paper. URL: https://ageprotect.org
+  </span>
+- <span id="ref-clienthints">
+    **[ClientHints]** URL: https://wicg.github.io/ua-client-hints/
+  </span>
+- <span id="ref-gpc">
+    **[GPC]** Global Privacy Control. URL: https://globalprivacycontrol.org
+  </span>
+- <span id="ref-nascar">
+    **[NASCAR]** The "NASCAR problem" in authorization server selection refers
+    to the visual clutter and user confusion when a website presents too many
+    third-party login/identity provider (IdP) buttons (like Google, Facebook,
+    Apple), resembling the crowded sponsorship decals on a NASCAR car. URL:
+    https://apicrazy.com/2014/07/22/nascar-problem-in-authorisation-server-selection/
+  </span>
+- <span id="ref-ieeeP7012">
+    **[IEEEP7012]** IEEE P7012. URL: https://standards.ieee.org/ieee/7012/7192/
+  </span>
+- <span id="ref-siopv2">
+    **[SIOPv2]** URL:
+    https://openid.net/specs/openid-connect-self-issued-v2-1_0.html
+  </span>
+- <span id="ref-wef2014">
+    **[WEF2014]** Rethinking Personal Data: Trust and Context in User-Centred
+    Data Ecosystems, World Economic Forum. URL:
+    https://www3.weforum.org/docs/WEF_RethinkingPersonalData_TrustandContext_Report_2014.pdf
+  </span>

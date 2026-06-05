@@ -3,6 +3,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import AutoImport from "astro-auto-import";
+import mermaid from "astro-mermaid";
 import { defineConfig } from "astro/config";
 import remarkCollapse from "remark-collapse";
 import remarkToc from "remark-toc";
@@ -17,6 +18,8 @@ export default defineConfig({
   image: { service: sharp() },
   vite: { plugins: [tailwindcss()] },
   integrations: [
+    // Must come before mdx() so it can process ```mermaid fences.
+    mermaid({ theme: "neutral", autoTheme: false, enableLog: false }),
     react(),
     sitemap(),
     AutoImport({
