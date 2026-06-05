@@ -1,0 +1,18 @@
+---
+import DocHeader from "@/layouts/partials/DocHeader.astro";
+import DocToc from "@/layouts/partials/DocToc.astro";
+import { render, type CollectionEntry } from "astro:content";
+
+interface Props {
+  doc: CollectionEntry<"docs">;
+}
+
+const { doc } = Astro.props;
+const { Content, headings } = await render(doc);
+---
+
+{doc.data.toc !== false && <DocToc headings={headings} />}
+<DocHeader data={doc.data} />
+<main>
+  <Content />
+</main>

@@ -1,0 +1,84 @@
+---
+import { markdownify } from "@/lib/utils/textConverter";
+import type { DocsData } from "@/types/docs.collection";
+
+interface Props {
+  data: DocsData;
+}
+
+const { data } = Astro.props;
+const { versions, editors, feedback } = data;
+const hasMeta =
+  versions || (editors && editors.length > 0) || feedback || data.copyright;
+---
+
+<div class="head">
+  <h1>{data.title}</h1>
+  {data.subtitle && <h2 id="subtitle">{data.subtitle}</h2>}
+
+  {
+    hasMeta && (
+      <dl>
+        {versions?.thisVersion && (
+          <>
+            <dt>This version:</dt>
+            <dd set:html={markdownify(versions.thisVersion)} />
+          </>
+        )}
+        {versions?.latestVersion && (
+          <>
+            <dt>Latest published version:</dt>
+            <dd set:html={markdownify(versions.latestVersion)} />
+          </>
+        )}
+        {versions?.history && (
+          <>
+            <dt>History:</dt>
+            <dd set:html={markdownify(versions.history)} />
+          </>
+        )}
+        {editors && editors.length > 0 && (
+          <>
+            <dt>Editors:</dt>
+            {editors.map((editor) => (
+              <dd>{editor}</dd>
+            ))}
+          </>
+        )}
+        {feedback && (
+          <>
+            <dt>Feedback:</dt>
+            <dd set:html={markdownify(feedback)} />
+          </>
+        )}
+      </dl>
+    )
+  }
+
+  {data.copyright && <p class="copyright" set:html={markdownify(data.copyright)} />}
+  <hr />
+</div>
+
+{
+  data.abstract && (
+    <section id="abstract">
+      <h2>Abstract</h2>
+      <p set:html={markdownify(data.abstract)} />
+    </section>
+  )
+}
+
+{
+  data.status && (
+    <section id="sotd">
+      <h2>Status of This Document</h2>
+      {data.status.content && <p set:html={markdownify(data.status.content)} />}
+      {data.status.boxes?.map((box) => (
+        <div class={box.type}>
+          {box.title && <span class="marker">{box.title}</span>}
+          <p set:html={markdownify(box.content)} />
+        </div>
+      ))}
+    </section>
+  )
+}

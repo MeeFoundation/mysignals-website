@@ -24,6 +24,7 @@ export default defineConfig({
         "@/shortcodes/Button",
         "@/shortcodes/Accordion",
         "@/shortcodes/Notice",
+        "@/shortcodes/Callout",
         "@/shortcodes/Video",
         "@/shortcodes/Youtube",
         "@/shortcodes/Tabs",

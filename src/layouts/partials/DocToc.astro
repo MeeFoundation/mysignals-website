@@ -1,0 +1,71 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+// Split a leading section number (e.g. "1.", "1.2", "A.", "C.1") off the heading
+// text so it can render in its own `.secno` column, matching the W3C look.
+// Only digit- or appendix-letter-prefixed headings are treated as numbered.
+const splitSecno = (text: string) => {
+  const match = text.match(
+    /^((?:[0-9]+(?:\.[0-9]+)*|[A-Z](?:\.[0-9]+)*)\.?)\s+(.+)$/,
+  );
+  if (match) {
+    return { secno: match[1], label: match[2] };
+  }
+  return { secno: null as string | null, label: text };
+};
+
+// Nest h3 headings under the preceding h2. Deeper levels and stray h1s are ignored.
+type TocNode = MarkdownHeading & { children: MarkdownHeading[] };
+const tree: TocNode[] = [];
+for (const heading of headings) {
+  if (heading.depth === 2) {
+    tree.push({ ...heading, children: [] });
+  } else if (heading.depth === 3 && tree.length > 0) {
+    tree[tree.length - 1].children.push(heading);
+  }
+}
+---
+
+{
+  tree.length > 0 && (
+    <nav id="toc">
+      <h2>Table of Contents</h2>
+      <ol class="toc">
+        {tree.map((section) => {
+          const { secno, label } = splitSecno(section.text);
+          return (
+            <li class="tocline">
+              <a href={`#${section.slug}`}>
+                {secno && <span class="secno">{secno}</span>}
+                <span>{label}</span>
+              </a>
+              {section.children.length > 0 && (
+                <ol>
+                  {section.children.map((sub) => {
+                    const subParts = splitSecno(sub.text);
+                    return (
+                      <li class="tocline">
+                        <a href={`#${sub.slug}`}>
+                          {subParts.secno && (
+                            <span class="secno">{subParts.secno}</span>
+                          )}
+                          <span>{subParts.label}</span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ol>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  )
+}

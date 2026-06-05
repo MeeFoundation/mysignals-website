@@ -1,9 +1,20 @@
 ---
 import BaseSpec from "@/layouts/BaseSpec.astro";
-import SpecLayout from "@/partials/Spec.astro";
-import HomeBanner from "@/partials/HomeBanner.astro";
+import DocContent from "@/layouts/partials/DocContent.astro";
+import { getEntry } from "astro:content";
+
+// The spec is authored as a plain Markdown doc (src/content/docs/spec.mdx) but
+// keeps its canonical /spec/ URL (linked from the home page).
+const doc = await getEntry("docs", "spec");
+if (!doc) {
+  throw new Error("Missing docs entry 'spec' (src/content/docs/spec.mdx)");
+}
 ---
 
-<BaseSpec title="Specification">
-  <SpecLayout />
+<BaseSpec
+  title={doc.data.title}
+  meta_title={doc.data.meta_title}
+  description={doc.data.description}
+>
+  <DocContent doc={doc} />
 </BaseSpec>

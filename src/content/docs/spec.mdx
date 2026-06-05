@@ -1,0 +1,288 @@
+---
+enable: true
+title: "MySignals"
+subtitle: "Editor's Draft: 30 January 2026"
+meta_title: "MySignals Specification"
+description: "A handshake process wherein a person and a service provider exchange signals to negotiate the terms of their interactions."
+versions:
+  thisVersion: "[https://mysignals.org/spec/](https://mysignals.org/spec/)"
+  latestVersion: "[https://mysignals.org/spec/](https://mysignals.org/spec/)"
+  history: "[https://github.com/MeeFoundation/my-signals-website](https://github.com/MeeFoundation/my-signals-website)"
+editors:
+  - "Paul Trevithick (Mee Foundation)"
+  - "Alexey Pepeskul (Swift Invention)"
+feedback: "[https://github.com/MeeFoundation/my-signals-website](https://github.com/MeeFoundation/my-signals-website) (pull requests, new issue, open issues)"
+copyright: "Copyright © 2025 The Mee Foundation."
+abstract: "This document defines a handshake process wherein a person and a service provider (or other person) exchange signals to negotiate the terms of their interactions. The handshake is conducted between the person's agent and the service provider’s website/app."
+status:
+  boxes:
+    - type: "advisement"
+      title: "Work in Progress"
+      content: "This is a draft document and may be updated, replaced, or obsoleted by other documents at any time. It is inappropriate to cite this document as other than a work in progress."
+---
+
+## 1. Introduction
+
+*This section is non-normative.*
+
+The internet has evolved to exhibit a power asymmetry between organizations and individuals--an asymmetry that comes at the expense of the autonomy, agency, and privacy of the individual. The power imbalance between internet technology users and service providers (businesses and governments) has been recognized for some time. It was described over a decade ago by the World Economic Forum [**WEF2014**]:
+
+<Callout type="example" title="World Economic Forum, 2014">
+An asymmetry of power exists today between institutions and individuals—created by an imbalance in the amount of information about individuals held by, or that is accessible to, industry and governments, and the lack of knowledge and ability of the same individuals to control the use of that information.
+</Callout>
+
+### 1.1 Background
+
+For the past two decades, hundreds of independent developers, and organized groups have explored different paths to restore the power imbalance we've described. A main thrust of this work is the development personal agents and other kinds of “empowerment” tools that work “on the individual's side” [**ProjectVRM**] and represent their interests.
+
+Possibly the simplest example of “empowerment” tooling is a browser that implements the Global Privacy Control [[**GPC**]](#ref-gpc). The GPC is signal from the browser communicates the person's Do Not Sell or Share request to the service provider. This signal is legally binding under the California Consumer Privacy Act, and similar state privacy laws that allow users to opt out of data sales or the use of their data for cross-context targeted advertising. The GPC signal was implemented by adding a `Sec-GPC: 1` field to user agent HTTP header in HTTP Request messages sent to the web server. For example:
+
+```http
+GET /something/here HTTP/2
+Host: example.com
+Sec-GPC: 1
+```
+
+### 1.2 Limitations of Current Approaches
+
+Implementing a handshake using custom `Sec-*` header field for each type of signal has disadvantages:
+
+- Each signaltype adds its own type of field to the HTTP header. Doing so adds entropy to the header which increases the fingerprinting surface area exposed to the network, thereby increasing tracking and associated privacy risks.
+- It broadcasts this information to all websites on every request and thus doesn't allow the person's agent (e.g. user agent (browser)) to make decisions about how to respond to website's requests for more detailed data.
+- The header field approach only works for websites, not apps.
+- The GPC field transmits one scalar value (in this case a single boolean) whereas other signals contain multiple parameters and more structure and complexity.
+
+### 1.3 Purpose and Characteristics
+
+MySignals is a handshake process between a person's agent and a service provider website/app. It is an extensible communications framework that allows developers to define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. During this handshake each side conveys the signaltypes it supports. It has these characteristics:
+
+- It follows a three step process flow.
+- In the first step the agent includes a `Sec-MS: 1` field in the GET request. This announces that agent supports the MySignals framework itself.
+- In the second step, if the site/app supports the MySignals framework it acknowledges this by including an Accept-MS field that includes the set of specific signaltypes it supports (if any)
+- In the third step, the agent includes in the GET request a `Sec-MS type=<signaltype>...` field that includes a subset of the set from step two that are acceptable to the agent.
+- If not empty, this subset defines the mutually agreed set of signaltypes that both parties agree to.
+- Steps two and three follow a discovery pattern similar to that used in [[**ClientHints**]](#ref-clienthints)
+- This discovery pattern reduces the fingerprinting surface area thereby improving privacy characteristics and reducing network traffic.
+- It supports structured, multi-parameter signals
+- It includes an optional URL to a "signal parameters resource" that contains parameters relevant to a specicifc signaltype.
+- It supports HTTP/websites. Support for mobile apps anticipated in a future version of this specification.
+
+### 1.4 Use Cases
+
+The MySignals framework is designed to support a range of current and anticipated handshaking/signaling needs. Use cases include:
+
+- **Privacy**: Provide legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternative mechanism to convey the Global Privacy Control [[**GPC**]](#ref-gpc) signal semantic.
+- **MyTerms**: Negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using IEEE P7012. [[**IEEEP7012**]](#ref-ieeeP7012).
+- **AgeProtect**: Signal the need for an age-appropriate experience from the service provider, and tell them which age verification and consent management endpoints you use. [[**AgeProtect**]](#ref-ageprotect).
+- **Identity**: Tell the service provider who you are. Give them a (self-sovereign) digital identifier.
+- **KERI-AID**: Proffer your KERI Autonomic identifier.
+- **IdP**: Tell the service provider which IdP (identity provider(s)) you use. This solves the [[**NASCAR**]](#ref-nascar) problem.
+- **SIOPv2**: Tell the service provider that your agent supports OpenID SIOPv2 allowing their site/app to display a “Continue with wallet” button for password-less login. [[**SIOPv2**]](#ref-siopv2).
+
+## 2. Definitions
+
+A **signaltype** is string that uniquely specifies a type of signal that can be sent by a person to a service provider. Implementers of this spec MUST use signaltypes defined in section 4 below. The semantics of each signaltype are defined by an implementer--they are outside of the MySignals spec. When a signal of a given signaltype is sent other parameters MAY be sent along with it. The definition and semantics of these parameters are also out of scope of the MySignals spec.
+
+A set of one or more parameters MAY be passed along with a signal by including a reference to a ***Signal Parameters Resource (SPR)*** that contains these parameters.
+
+## 3. Handshake Process
+
+This section describes the three step process when implemented over HTTP.
+
+### 3.1 Step 1: Initiate MySignals Framework
+
+The user agent MUST insert a `Sec-MS` header field with a value of 1, for example:
+
+```http
+GET /something/here HTTP/2
+Host: example.com
+Sec-MS: 1
+```
+
+### 3.2 Step 2: Acknowlege MySignals
+
+The server MUST respond with an `Accept-MS` header field if it supports the MySignals framework. If it supports the MySignals frameork the `Accept-MS` field MUST specifying one or more supported signaltypes:
+
+```http
+HTTP/1.1 200 OK
+Accept-MS: signaltype1;def=https://example.com/signaltype1.json signaltype2;def=https://example.com/signaltype2.json, ... signaltypeN;def=https://example.com/sig-n-doc.html
+```
+
+### 3.3 Step 3: Send signal(s)
+
+The user agent MUST send one or more MySignals headers specifying the signaltype string value along with an optional Signal Parameters Resource (SPR) URL value. The example below shows a signaltype of "OpenIDConnect" and an SPR URL "https://google.com/mysignals.json":
+
+```http
+GET /something/here HTTP/2
+Host: example.com
+Sec-MS OpenIDConnect;def="https://google.com/mysignals.json"
+```
+
+## 4. Signaltypes
+
+In step 3 when the agent is sending a specific signaltype, an optional reference (URL) to a Signal Parameteres Resource MAY be included. The value of signaltype MUST be one of:
+
+- "GPCv2" - request to opt-out of sharing/selling their data. Same semantics as the Global Privacy Control [[**GPC**]](#ref-gpc).
+- "MyTerms" - proffer privacy and data sharing terms using IEEE P7012. [[**IEEEP7012**]](#ref-ieeeP7012).
+- "AgeProtectv1" - request an age-appropriate experiece and that their agent implements AgeProtect
+- "IdKERI" - proffer the person's KERI AID.
+- "IdP" - request to use a this identity provider.
+- "SIOPv2" - request to log in using OpenID [[**SIOPv2**]](#ref-siopv2).
+
+## 5. Signal Definitions
+
+Servers must advertise an definition uri for each signal within the probe response, pointing either to an informational human-readable spec or a Schema document. Those definitions must be interpreted by the agent to understand the signal's meaning and value.
+
+## 6. Signal Parameters Resource reference
+
+In step 3 when the agent is sending a specific signaltype, an optional URL reference to a Signal Parameters Resource (SPR) MAY be included.
+
+## 7. Signal Parameters Resource (SPR)
+
+An SPR is a [[**JSON**]](#ref-json) format resource that contains additional parameters to pass with a signal. It MUST contain the title and version fields. The rest of the fields are determined by the specifics of the signaltype. Each signaltype has its own section of the SPR (e.g. "[SIOPv2]") followed by one or more signaltype-specific fields.
+
+- "title" - a string of value "Signal Parameters Resource".
+- "version" - a string indicating the version of the SPR resource's format. MUST be "v1".
+
+## 8. JS SDK
+
+The MySignals JS SDK is a zero-dependency, universal JavaScript/TypeScript library designed to implement the explicit handshake flow of the MySignals privacy protocol on any web page.
+
+### 8.1 API Reference
+
+The API provides core methods to manage the handshake lifecycle: the `constructor` initializes the `MySignalsClient` with customizable configurations for endpoints, storage strategies, and testing environments. The `init()` method probes the server for `CRITICAL` and `ACCEPTED` signal requirements, transitioning the state from `IDLE` to `PROBED`, while `submit()` delivers the user's privacy signals to the backend, advancing the state through `SUBMITTING` to `SUBMITTED` upon success. Additionally, developers can use `getStatus()` to retrieve a comprehensive snapshot of the current handshake state, pending requirements, and errors, or call `reset()` to completely clear the session state and storage, returning the SDK to `IDLE`.
+
+### 8.2 Universal Compatibility & Zero Dependencies
+
+- **Formats**: Published in ESM, CommonJS, and UMD formats.
+- **Environments**: Works seamlessly within modern build tools (Vite, Webpack, Rollup) and natively in the browser via simple `<script>` tags.
+- **Size**: Tiny footprint utilizing native browser APIs like `fetch`.
+
+### 8.3 Robust State Machine Orchestration
+
+The entire handshake process is strictly modeled as a finite state machine, guaranteeing reliable and predictable transitions:
+
+`IDLE` → `PROBING` → `PROBED` → `SUBMITTING` → `SUBMITTED`
+
+If a submission leaves some `CRITICAL` signals pending, the client enters `PARTIALLY_SUBMITTED` instead and loops back through `SUBMITTING` on subsequent `submit()` calls until every critical signal has been delivered, at which point it reaches terminal `SUBMITTED`. Accepted-only top-ups from `PARTIALLY_SUBMITTED` remain in that state.
+
+Errors elegantly transition the client into an `ERROR` state, capturing the previous state to support clean retry logic and recovery.
+
+### 8.4 Smart Storage & Hydration
+
+Minimize network calls and avoid redundant user prompting. The SDK can automatically persist and revive its handshake state:
+
+- `memory`: Persists for the lifetime of the page.
+- `sessionStorage`: Persists across reloads within the same browser tab.
+- `localStorage`: Long-lived persistence including a smart 24-hour TTL for long-lived consent flows.
+
+### 8.5 Headless Demo Mode
+
+Integration testing and frontend prototyping are seamless with the built-in `DemoTransport`. Developers can toggle `demo: true` or pass a customized configuration to simulate network latency, expected server signal requirements, and mock responses—all without a real backend.
+
+### 8.6 Configurable Logging
+
+Observability is built-in. Debugging complex cross-origin handshakes is made easy using the structured logger with varying verbosity levels (`debug`, `info`, `warn`, `error`, `silent`).
+
+### 8.7 Dynamic Signal Registry
+
+The SDK maintains a predefined registry of standard privacy and identity signals (e.g., `GPC`, `AgeProtect`, `SiopV2`). However, it gracefully processes any custom signal the server negotiates, classifying them into `CRITICAL` (required) or `ACCEPTED` (optional) priorities based on the protocol requirements.
+
+### 8.8 Cross-Origin Support
+
+By decoupling the client origin from the backend service, developers can perform the MySignals handshake securely across different domains. The SDK allows attaching credentials/cookies to cross-origin `fetch` requests seamlessly.
+
+### 8.9 Definition URI
+
+This section describes how the SDK treats signal definitions, including the `definitionUri` field and schema validation.
+
+Servers should advertise a `definitionUri` for each signal — the source of truth for what that signal means and what shape its value takes. A `definitionUri` may point to either:
+
+- JSON Schema document (validated on a server and client-side when a validator is wired)
+- human-readable spec page (HTML, Markdown, etc.)
+
+### 8.10 Spec rules
+
+Within the `signals` map, `definitionUri` is required for each entry
+
+- `definitionUri` is treated as immutable — servers publish new versions at new URLs (e.g., `/schemas/myterms/v2.json`). Client-side validation is advisory by default; the server remains the authoritative validator. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`.
+- If no validator is configured, the SDK skips fetching `definitionUri` entirely (no schema validation, no wasted bandwidth). URIs are still exposed on `SignalRequirement.definitionUri` for documentation UI.
+
+### 8.11 Wiring a validator (Ajv example)
+
+The SDK stays dependency-free by exposing a SchemaValidator interface. Bring your own:
+
+```ts
+import Ajv from 'ajv/dist/2020.js';
+import { MySignalsClient, type SchemaValidator } from 'mysignals-sdk';
+
+const ajv = new Ajv({ strict: false });
+
+const validator: SchemaValidator = {
+  validate(schema, value) {
+    const v = ajv.compile(schema);
+    const valid = v(value);
+    return valid
+      ? { valid: true }
+      : { valid: false, errors: (v.errors ?? []).map((e) => e.message ?? '') };
+  },
+};
+
+const client = new MySignalsClient({ validator, strictValidation: false });
+```
+
+### 8.12 Wire format
+
+Signal values are JSON-encoded into `X-MS-${name}` headers. Strings pass through unchanged; objects, booleans, and numbers are `JSON.stringify`-ed. Schemas describe the value as the developer sees it, not the wire form.
+
+## 10. Privacy Considerations
+
+<Callout type="issue" title="To be written">
+This section will address privacy implications and considerations.
+</Callout>
+
+## 11. Security Considerations
+
+<Callout type="issue" title="To be written">
+This section will address security implications and considerations.
+</Callout>
+
+## 12. Automation
+
+<Callout type="issue" title="To be written">
+This section will address automation considerations.
+</Callout>
+
+## 13. Conformance
+
+<Callout type="issue" title="To be written">
+This section will define conformance requirements.
+</Callout>
+
+## A. Implementation Considerations
+
+<Callout type="issue" title="To be written">
+This appendix will provide implementation guidance and best practices.
+</Callout>
+
+## B. Acknowledgements
+
+<Callout type="issue" title="To be written">
+This appendix will acknowledge contributors to this specification.
+</Callout>
+
+## C. References
+
+### C.1 Normative references
+
+- <span id="ref-json">**[JSON]** JSON spec. URL: https://www.rfc-editor.org/rfc/rfc8259</span>
+
+### C.2 Informative references
+
+- <span id="ref-ageprotect">**[AgeProtect]** AgeProtect paper. URL: https://ageprotect.org</span>
+- <span id="ref-clienthints">**[ClientHints]** URL: https://wicg.github.io/ua-client-hints/</span>
+- <span id="ref-gpc">**[GPC]** Global Privacy Control. URL: https://globalprivacycontrol.org</span>
+- <span id="ref-nascar">**[NASCAR]** The "NASCAR problem" in authorization server selection refers to the visual clutter and user confusion when a website presents too many third-party login/identity provider (IdP) buttons (like Google, Facebook, Apple), resembling the crowded sponsorship decals on a NASCAR car. URL: https://apicrazy.com/2014/07/22/nascar-problem-in-authorisation-server-selection/</span>
+- <span id="ref-ieeeP7012">**[IEEEP7012]** IEEE P7012. URL: https://standards.ieee.org/ieee/7012/7192/</span>
+- <span id="ref-siopv2">**[SIOPv2]** URL: https://openid.net/specs/openid-connect-self-issued-v2-1_0.html</span>
+- <span id="ref-wef2014">**[WEF2014]** Rethinking Personal Data: Trust and Context in User-Centred Data Ecosystems, World Economic Forum. URL: https://www3.weforum.org/docs/WEF_RethinkingPersonalData_TrustandContext_Report_2014.pdf</span>

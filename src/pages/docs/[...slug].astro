@@ -1,0 +1,22 @@
+---
+import BaseSpec from "@/layouts/BaseSpec.astro";
+import DocContent from "@/layouts/partials/DocContent.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const allDocs = await getCollection("docs", ({ data }) => data.enable !== false);
+  return allDocs
+    .filter((doc) => doc.id !== "spec") // `spec` keeps its canonical /spec/ URL
+    .map((doc) => ({ params: { slug: doc.id }, props: { doc } }));
+}
+
+const { doc } = Astro.props;
+---
+
+<BaseSpec
+  title={doc.data.title}
+  meta_title={doc.data.meta_title}
+  description={doc.data.description}
+>
+  <DocContent doc={doc} />
+</BaseSpec>

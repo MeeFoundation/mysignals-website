@@ -1,3 +1,4 @@
+import { docs } from "./types/docs.collection";
 import {
   about,
   blog,
@@ -26,7 +27,6 @@ import {
   testimonialSection,
   valuesSection,
   descriptionSection,
-  specSection,
   faqSection,
 } from "./types/sections.collections";
 
@@ -41,6 +41,9 @@ export const collections = {
   integration,
   pages,
   pricing,
+
+  // Docs
+  docs,
 
   // Sections
   aboutBannerSection,
@@ -60,6 +63,5 @@ export const collections = {
   testimonialSection,
   valuesSection,
   descriptionSection,
-  specSection,
   faqSection,
 };
