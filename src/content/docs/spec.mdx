@@ -13,7 +13,7 @@ editors:
   - "Alexey Pepeskul (Swift Invention)"
 feedback: "[https://github.com/MeeFoundation/my-signals-website](https://github.com/MeeFoundation/my-signals-website) (pull requests, new issue, open issues)"
 copyright: "Copyright © 2025 The Mee Foundation."
-abstract: "This document defines a handshake process wherein a person and a service provider (or other person) exchange signals to negotiate the terms of their interactions. The handshake is conducted between the person's agent and the service provider’s website/app. Signals may be sent on the first request without prior negotiation; discovery of a service provider's supported signals is optional, in-band, and cacheable; and each received signal is acknowledged by the service provider."
+abstract: "This document defines a handshake process wherein a person and a service provider (or other person) exchange signals to negotiate the terms of their interactions. The handshake is conducted between the person's agent and the service provider’s website/app."
 status:
   boxes:
     - type: "advisement"
@@ -58,10 +58,10 @@ Implementing a handshake using custom `Sec-*` header field for each type of sign
 
 ### 1.3 Purpose and Characteristics
 
-MySignals is a handshake process between a person's agent and a service provider website/app. It is an extensible communications framework that allows developers to define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. It has these characteristics:
+MySignals defines a handshake process between a person's agent and a service provider website/app. It is an extensible communications framework that allows developers to define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. It has these characteristics:
 
 - It is **stateless**: every request is interpreted on its own, and a service provider never requires a prior exchange before honouring a signal.
-- An agent MAY send one or more signals **directly**, as `Sec-MS` request headers — each identifying the signal by its **schema URI** (§5) and carrying its payload — without any prior negotiation. A time-sensitive or legally binding signal such as GPCv2 can therefore ride the very first request.
+- An agent MAY send one or more signals **practively**, as `Sec-MS` request headers — each identifying the signal by its **schema URI** (§5) and carrying its payload — without any prior negotiation. A time-sensitive or legally binding signal such as GPCv2 can therefore ride the very first request.
 - **Discovery is optional and in-band.** An agent MAY first probe with a `Sec-MS-Discovery: 1` field; a supporting service provider responds with an `Accept-MS` field listing the schema URIs it supports. The advertisement is cacheable.
 - The service provider **acknowledges** each received signal with a separate `Ack-MS` field reporting `Ack`, `Unknown`, or `BadData` for that signal's schema URI.
 - Discovery follows a pattern similar to that used in [[**ClientHints**]](#ref-clienthints), reducing the fingerprinting surface area and network traffic.
@@ -70,13 +70,13 @@ MySignals is a handshake process between a person's agent and a service provider
 
 ## 2. Definitions
 
-A **signaltype** is a human-readable name for a kind of signal a person can send to a service provider (see §4). On the wire a signal is not identified by this name but by its **schema URI** — the URL of the signal's definition (§5). Implementers of this spec MUST use the signaltypes defined in §4. The semantics of each signaltype are defined by an implementer — they are outside of the MySignals spec.
+A **signaltype** is a _virtual human-readable_ name for a kind of signal a person can send to a service provider (see §4). On the wire a signal is not identified by this name but by its **schema URI** — the URL of the signal's definition (§5). Implementers of this spec MUST use the signaltypes defined in §4. The semantics of each signaltype are defined by an implementer — they are outside of the MySignals spec.
 
 A signal carries a **payload**: value whose shape is described by the signal's schema. The payload's contents and semantics are defined by the signaltype's definition and are out of scope of the MySignals spec.
 
 ## 3. Handshake Process
 
-The framework is a stateless exchange of three independent parts: an agent **submits** one or more signals, MAY first **discover** what a service provider supports, and receives a per-signal **acknowledgement**. Discovery is not a prerequisite for submission.
+The framework is a stateless exchange of three independent parts: an agent **submits** one or more signals, MAY first **discover** what a service provider supports, and receives a per-signal **acknowledgement**.
 
 ### 3.1 Statelessness
 
@@ -84,7 +84,7 @@ The framework establishes no session. A service provider MUST NOT require a prio
 
 ### 3.2 Sending signals
 
-An agent submits a signal by including a `Sec-MS` request header whose value is `<schemaUri>;<payload>` — the signal's schema URI (§5), a semicolon, then the payload (a scalar such as a boolean opt-out, or a structured JSON value, or any arbitrary strucuture defined in a schema). One `Sec-MS` header is sent per signal; repeat the header to send several. Signals MAY be sent on the very first request, without any prior discovery:
+An agent submits a signal by including a `Sec-MS` request header whose value is `<schemaUri>;<payload>` — the signal's schema URI (§5), a semicolon, then the payload (a scalar such as a boolean opt-out, or a structured JSON value, or any arbitrary strucuture defined in a schema). One `Sec-MS` header is sent per signal; repeat the header to send several. Examples of valid `Sec-MS` header values:
 
 ```http
 GET /page HTTP/2
@@ -118,7 +118,7 @@ sequenceDiagram
 
 ### 3.3 Discovery (optional phase)
 
-When an agent wants to learn what a service provider supports, it sends an in-band probe — a `Sec-MS-Discovery: 1` field. The probe is per-request and per-context, so it can reflect capabilities that vary by route, region, or authentication state. A supporting service provider responds with an `Accept-MS` field listing the schema URIs it supports, together with HTTP cache directives:
+When an agent wants to learn what a service provider supports, it sends an in-band probe — a `Sec-MS-Discovery: 1` field. The probe is per-request and per-context, so it can reflect capabilities that vary by route, region, or authentication state. A supporting service provider responds with an `Accept-MS` header listing the schema URIs it supports, together with HTTP cache directives:
 
 ```http
 GET /page HTTP/2
@@ -161,7 +161,7 @@ For each received signal the service provider determines the status as follows:
 3. Otherwise validate the decoded payload against the schema; if validation fails → `BadData`.
 4. Otherwise → `Ack`.
 
-Statuses are mutually exclusive and evaluated independently per signal, so a response can carry a mix of all three across its `Ack-MS` headers. The `Ack-MS` header appears **only when signals were received**: a bare probe (`Sec-MS-Discovery: 1` with no `Sec-MS` signals) produces only the `Accept-MS` advertisement, never an `Ack-MS`. An `Ack-MS` MAY accompany an `Accept-MS` advertisement on the same response when an agent probes and submits in one request.
+Statuses are mutually exclusive and evaluated independently per signal, so a response can carry a mix of all three across its `Ack-MS` headers. The `Ack-MS` header appears **only when signals were received**: a bare probe (`Sec-MS-Discovery: 1` with no `Sec-MS` signals) produces only the `Accept-MS` advertisement, never an `Ack-MS`. An `Ack-MS` MAY accompany an `Accept-MS` advertisement (so-called "multiplexed response") on the same response when an agent probes and submits in one request.
 
 **Unrecognised schema URI** — the agent learns to stop sending it:
 
@@ -173,7 +173,7 @@ Sec-MS: https://example.com/defs/siopv2.json;{"client_id":"did:example:123"}
 Ack-MS: https://example.com/defs/siopv2.json=Unknown
 ```
 
-**Recognised but invalid** — for example an out-of-range value: GPCv2 expresses a single boolean opt-out, so `2` is not valid and fails its schema:
+**Recognised but invalid** — for example an out-of-range value:
 
 ```http
 Sec-MS: https://example.com/defs/gpcv2.json;2
@@ -213,9 +213,9 @@ sequenceDiagram
 
 ### 3.5 Caching and signal discovery
 
-Discovery is intended to be inexpensive through caching at three layers:
+Discovery is intended to be inexpensive way to advertise supported signal types:
 
-- **Discovery results.** The set of schema URIs advertised in `Accept-MS` MAY change over time and SHOULD therefore be cached with a finite freshness lifetime and revalidation. A service provider SHOULD return standard HTTP caching directives — `Cache-Control` (`max-age`), `ETag`, and optionally `stale-while-revalidate`. An agent SHOULD associate the advertised set with the origin and honour those directives.
+- **Discovery results.** The set of schema URIs advertised in `Accept-MS` MAY change over time and therefore be cached with a finite freshness lifetime and revalidation. A service provider MAY return standard HTTP caching directives — e.g `Cache-Control` (`max-age`), `ETag`
 - **Definition resources.** A schema URI is immutable: a revised definition MUST be published at a new URL (for example `/defs/myterms-v2.json`) rather than by mutating the existing resource (§5). Because a definition cannot change in place, an agent MAY cache it indefinitely, and a service provider SHOULD serve it with `Cache-Control: public, max-age=31536000, immutable`.
 - **Agent-side storage.** An agent MAY persist discovery results locally to avoid redundant probes. The JS SDK implements this with selectable `memory`, `sessionStorage`, and `localStorage` (24-hour TTL) strategies (§6.2).
 
@@ -293,7 +293,9 @@ const validator: SchemaValidator = {
 const client = new MySignalsClient({ validator, strictValidation: false });
 ```
 
-On the wire, the SDK sends each signal as an `X-MS` request header (value `<schemaUri>;<payload>`) rather than `Sec-MS`, and probes with `X-MS-Discovery` rather than `Sec-MS-Discovery`: `Sec-` is a forbidden header name that page scripts cannot set, so the `X-MS` and `X-MS-Discovery` headers are the script-accessible equivalents of the canonical user-agent forms (§3.2, §3.3), which service providers honour identically. Payloads are JSON-encoded — strings pass through unchanged; objects, booleans, and numbers are `JSON.stringify`-ed — and schemas describe the value as the developer sees it, not the wire form. The SDK surfaces the service provider's per-signal `Ack-MS` results (`Ack` / `Unknown` / `BadData`, §3.4) to the caller.
+On the wire, the SDK sends each signal as an `X-MS` request header (value `<schemaUri>;<payload>`) rather than `Sec-MS`, and probes with `X-MS-Discovery` rather than `Sec-MS-Discovery`: `Sec-` is a forbidden header name that page scripts cannot set, so the `X-MS` and `X-MS-Discovery` headers are the script-accessible equivalents of the canonical user-agent forms (§3.2, §3.3), which service providers should honour identically. Payloads are JSON-encoded — strings pass through unchanged; objects, booleans, and numbers are `JSON.stringify`-ed — and schemas describe the value as the developer sees it, not the wire form. The SDK surfaces the service provider's per-signal `Ack-MS` results (`Ack` / `Unknown` / `BadData`, §3.4) to the caller.
+
+{/*
 
 ## 6. Privacy Considerations
 
@@ -330,16 +332,16 @@ On the wire, the SDK sends each signal as an `X-MS` request header (value `<sche
 <Callout type="issue" title="To be written">
   This appendix will acknowledge contributors to this specification.
 </Callout>
+*/}
+## A. References
 
-## C. References
-
-### C.1 Normative references
+### A.1 Normative references
 
 - <span id="ref-json">
     **[JSON]** JSON spec. URL: https://www.rfc-editor.org/rfc/rfc8259
   </span>
 
-### C.2 Informative references
+### A.2 Informative references
 
 - <span id="ref-ageprotect">
     **[AgeProtect]** AgeProtect paper. URL: https://ageprotect.org
