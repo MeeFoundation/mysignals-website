@@ -252,27 +252,44 @@ The MySignals framework is designed to support a range of current and anticipate
 
 ## 5. JS SDK
 
-The MySignals JS SDK is a zero-dependency JavaScript/TypeScript library that implements the handshake flow on any web page. It ships as ESM, CommonJS, and UMD, runs in modern bundlers (Vite, Webpack, Rollup) and directly in the browser via a `<script>` tag, and relies only on native APIs such as `fetch`.
+The MySignals JS SDK is a zero-dependency JavaScript/TypeScript library that implements the handshake flow on any web page. It ships as ESM, CommonJS, and UMD; runs in modern bundlers (Vite, Webpack, Rollup) and directly in the browser via a `<script>` tag; and relies only on native APIs such as `fetch`.
 
 ### 5.1 API and lifecycle
 
-`MySignalsClient` exposes a small lifecycle API: `init()` probes the server for `CRITICAL` and `ACCEPTED` signal requirements, `submit()` delivers the user's signals, `getStatus()` returns a snapshot of state, pending requirements, and errors, and `reset()` clears session state and storage. The handshake is modeled as a finite state machine:
+`MySignalsClient` exposes a small lifecycle API:
 
-`IDLE` → `PROBING` → `PROBED` → `SUBMITTING` → `SUBMITTED`
+| Method | Purpose |
+|---|---|
+| `init()` | Probes the server for `CRITICAL` and `ACCEPTED` signal requirements |
+| `submit()` | Delivers the user's signals |
+| `getStatus()` | Returns a snapshot of state, pending requirements, and errors |
+| `reset()` | Clears session state and storage |
+
+The handshake is modeled as a finite state machine:
+
+```
+IDLE → PROBING → PROBED → SUBMITTING → SUBMITTED
+```
+
 Errors move the client to `ERROR`, capturing the previous state for clean retry.
 
 ### 5.2 Capabilities
 
-- **Storage**: persists handshake state in `memory`, `sessionStorage`, or `localStorage` (with a 24-hour TTL) to avoid redundant prompting.
-- **Demo mode**: a built-in `DemoTransport` (`demo: true`) simulates latency, server requirements, and responses with no backend.
-- **Logging**: a structured logger with `debug`, `info`, `warn`, `error`, and `silent` levels.
-- **Cross-origin**: performs the handshake across domains, optionally attaching credentials/cookies to `fetch` requests.
+- **Storage** — persists handshake state in `memory`, `sessionStorage`, or `localStorage` (with a 24-hour TTL) to avoid redundant prompting.
+- **Demo mode** — a built-in `DemoTransport` (`demo: true`) simulates latency, server requirements, and responses with no backend.
+- **Logging** — a structured logger with `debug`, `info`, `warn`, `error`, and `silent` levels.
+- **Cross-origin** — performs the handshake across domains, optionally attaching credentials/cookies to `fetch` requests.
 
 ### 5.3 Signal definitions and validation
 
-Each entry in the `signals` map carries a required `definitionUri` — the source of truth for what a signal means and what shape its value takes. It may point to a JSON Schema document or a human-readable spec page, and is treated as immutable (publish new versions at new URLs, e.g. `/schemas/myterms/v2.json`).
+Each entry in the `signals` map carries a required `definitionUri` — the source of truth for what a signal means and what shape its value takes. It may point to a JSON Schema document or a human-readable spec page, and is treated as immutable: publish new versions at new URLs, e.g. `/schemas/myterms/v2.json`.
 
-Validation is advisory by default; the server remains authoritative. If no validator is configured the SDK skips fetching `definitionUri`. Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`. The SDK stays dependency-free via a `SchemaValidator` interface — bring your own (Ajv example):
+Validation is **advisory by default**; the server remains authoritative.
+
+- If no validator is configured, the SDK skips fetching `definitionUri`.
+- Set `strictValidation: true` to reject locally with `MySignalsErrorCode.SCHEMA_VIOLATION`.
+
+The SDK stays dependency-free via a `SchemaValidator` interface — bring your own (Ajv example):
 
 ```ts
 import Ajv from "ajv/dist/2020.js";
@@ -293,7 +310,18 @@ const validator: SchemaValidator = {
 const client = new MySignalsClient({ validator, strictValidation: false });
 ```
 
-On the wire, the SDK sends each signal as an `X-MS` request header (value `<schemaUri>;<payload>`) rather than `Sec-MS`, and probes with `X-MS-Discovery` rather than `Sec-MS-Discovery`: `Sec-` is a forbidden header name that page scripts cannot set, so the `X-MS` and `X-MS-Discovery` headers are the script-accessible equivalents of the canonical user-agent forms (§3.2, §3.3), which service providers should honour identically. Payloads are JSON-encoded — strings pass through unchanged; objects, booleans, and numbers are `JSON.stringify`-ed — and schemas describe the value as the developer sees it, not the wire form. The SDK surfaces the service provider's per-signal `Ack-MS` results (`Ack` / `Unknown` / `BadData`, §3.4) to the caller.
+### 5.4 Wire format
+
+The SDK uses script-accessible equivalents of the canonical user-agent headers: `Sec-` is a forbidden header name that page scripts cannot set, so service providers should honour both forms identically.
+
+| Canonical (user agent) | SDK (page script) | Spec |
+|---|---|---|
+| `Sec-MS` | `X-MS` | §3.2 |
+| `Sec-MS-Discovery` | `X-MS-Discovery` | §3.3 |
+
+- Each signal is sent as an `X-MS` request header with the value `<schemaUri>;<payload>`.
+- Payloads are JSON-encoded: strings pass through unchanged; objects, booleans, and numbers are `JSON.stringify`-ed. Schemas describe the value as the developer sees it, not the wire form.
+- The SDK surfaces the service provider's per-signal `Ack-MS` results (`Ack` / `Unknown` / `BadData`, §3.4) to the caller.
 
 {/*
 
