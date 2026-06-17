@@ -63,9 +63,9 @@ MySignals defines a protocol by which a person's agent sends signals to a servic
 - An agent MAY send one or more signals **proactively**, as `Sec-MS` request headers — each identifying the signal by its **schema URI** (§3.2) and carrying its payload — without any prior negotiation. A time-sensitive or legally binding signal such as GPCv2 can therefore ride the very first request.
 - **Discovery is optional and in-band.** An agent MAY first probe with a `Sec-MS-Discovery: 1` field; a supporting service provider responds with an `Accept-MS` field listing the schema URIs it supports. The advertisement is cacheable.
 - The service provider **acknowledges** each received signal with a separate `Ack-MS` field reporting `Ack`, `Unknown`, or `BadData` for that signal's schema URI.
-- Discovery follows a pattern similar to that used in [[**ClientHints**]](#ref-clienthints), reducing the fingerprinting surface area and network traffic.
+- Protocol is inspired by pattern similar to that used in [[**ClientHints**]](#ref-clienthints), reducing the fingerprinting surface area and network traffic.
 - It supports structured, multi-parameter signals carried in the payloads.
-- It supports HTTP/websites. Support for mobile apps is anticipated in a future version of this specification.
+- It supports HTTP/websites and any apps capable of sending HTTP requests.
 
 ## 2. Definitions
 
