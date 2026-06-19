@@ -1,7 +1,6 @@
 # How it works
 
 You configure your agent and tell it which signaltypes to send on your behalf.
-The protocol is **stateless** — no session, no negotiation, no prior handshake.
 
 **Step 1 — One opening request.** On its very first request the agent does two things at once:
 it sends a signal (a time-sensitive one such as GPC can ride this first request) _and_ asks
@@ -21,7 +20,7 @@ sequenceDiagram
     U->>A: Configure signaltypes
 
     rect rgb(232, 244, 244)
-        Note over A,S: 1 · send a signal AND discovery
+        Note over A,S: 1 · Send a signal AND discovery
         S-->>A: Acknowledges the signal + "here are the signaltypes I honor"
     end
 
