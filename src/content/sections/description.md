@@ -11,8 +11,8 @@ button:
   link: "/spec/"
 embedVideoId: "rAEjlG6QO8s"
 explanation: |
-  ##### **MySignals is a handshake process between your agent and a service provider website/app.**
-  It's an extensible communications framework that allows developers to define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. During this handshake each side conveys the signaltypes it supports.
+  ##### **MySignals is a protocol for exchanging signals between your agent and a service provider website/app.**
+  It's an extensible communications protocol that lets developers define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. Your agent can send signals on its very first request, and can optionally discover which signaltypes a service provider supports before sending.
   
   |    **Signal**    |  **Description** |
   | :----------: | :----------: |
