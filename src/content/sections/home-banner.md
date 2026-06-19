@@ -3,7 +3,7 @@ enable: true
 # Banner
 note: ""
 title: "Say hello and signal your intent"
-description: MySignals is an introductory handshake between your agent and a service provider website/app. 
+description: MySignals is a protocol for exchanging signals between your agent and a service provider website/app. 
 
 image:
   src: "/images/banner.jpg" # Main Image
