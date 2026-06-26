@@ -112,7 +112,7 @@ sequenceDiagram
     participant A as Person's agent
     participant S as Service (entity)
     Note over A: Chooser default = SD-BASE
-    A->>S: GET /article + Sec-MS myterms-v1.json;SD-BASE
+    A->>S: GET /article + Sec-MS myterms-v1.json (SD-BASE)
     alt service accepts SD-BASE
         S-->>A: 200 OK + Ack-MS …=Ack
         Note over A,S: Choice accepted → MyTerms contract lifecycle (§6)
@@ -135,10 +135,10 @@ A `BadData` answer is where IEEE 7012's "single counter-offer" would appear. MyS
 sequenceDiagram
     participant A as Person's agent
     participant S as Service (entity)
-    A->>S: GET / + Sec-MS myterms-v1.json;SD-BASE
+    A->>S: GET / + Sec-MS myterms-v1.json (SD-BASE)
     S-->>A: 200 OK + Ack-MS …=BadData
     Note over A: Re-discover the accepted set (§5)
-    A->>S: GET / + Sec-MS myterms-v1.json;SD-BASE-AT
+    A->>S: GET / + Sec-MS myterms-v1.json (SD-BASE-AT)
     S-->>A: 200 OK + Ack-MS …=Ack
 ```
 
@@ -200,7 +200,7 @@ sequenceDiagram
     A->>S: GET /defs/myterms-v1.json
     S-->>A: 200 OK + definition (accepted agreements)
     Note over A: Pick an acceptable agreement from the enum
-    A->>S: GET /signup + Sec-MS myterms-v1.json;SD-BASE-AT
+    A->>S: GET /signup + Sec-MS myterms-v1.json (SD-BASE-AT)
     S-->>A: 200 OK + Ack-MS …=Ack
     Note over A,S: Choice accepted → MyTerms contract lifecycle (§6)
 ```
@@ -221,7 +221,7 @@ sequenceDiagram
     participant S as Service (entity)
     rect rgb(235, 245, 255)
     Note over A,S: MySignals — deliver & acknowledge the choice
-    A->>S: Sec-MS myterms-v1.json;SD-BASE-AT
+    A->>S: Sec-MS myterms-v1.json (SD-BASE-AT)
     S-->>A: Ack-MS …=Ack
     end
     rect rgb(235, 255, 240)
