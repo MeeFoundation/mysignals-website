@@ -76,7 +76,7 @@ HTTP/1.1 200 OK
 Ack-MS: https://example.com/defs/myterms-v1.json=Ack
 ```
 
-The mapping between MyTerms and MySignals is the following:
+## 4. The mapping between MyTerms and MySignals
 
 | IEEE 7012 concept                                           | MySignals primitive                                                                                    |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -87,7 +87,7 @@ The mapping between MyTerms and MySignals is the following:
 | Agreement definition in the public registry (§5.1, §A.1)    | The immutable **schema URI** (§3.2), e.g. a DPV IRI                                                    |
 | The chosen term (`SD-BASE`, hex CONTRACT ZONE, …)           | The signal **payload** after the `;` (§3.3)                                                            |
 
-## 4. Scenario A — the client proactively proffers an agreement
+## 5. Scenario A — the client proactively proffers an agreement
 
 **Use Case B.1, "No Stalking"**: a reader visits many news sites and wants service without being tracked. Their agent's chooser has already selected `SD-BASE` as the default. Per the proposer role (§5.2.1.3) the agent presents it to every entity without a prior probe. In MySignals terms that is a proactive signal riding the first request (§1.3, §3.3).
 
@@ -141,7 +141,7 @@ sequenceDiagram
 
 The person's agent decides whether the discovered alternative is acceptable to its owner — exactly the single, person-controlled decision IEEE 7012 intends.
 
-## 5. Scenario B — the service advertises the agreements it accepts
+## 6. Scenario B — the service advertises the agreements it accepts
 
 **Use Case B.2, "Intentcasting."** Alice tries `WebSiteABC`, whose banner says it tracks nothing unless she opts into "one of the standard information-sharing agreements that we accept." Early in sign-up she chooses from a small set of agreements that the site "**has confirmed in advance that they accept**" — the §5.3.2 obligation to publish acceptable terms.
 
@@ -204,7 +204,7 @@ sequenceDiagram
 
 Because a schema URI is immutable (§3.2), the accepted set is pinned to that URI. If the service later changes which agreements it accepts, it publishes a **new** URI and advertises it; the cacheable discovery result (§3.6) carries the change to agents when their cached entry expires.
 
-## 6. Handoff to MyTerms
+## 7. Handoff to MyTerms
 
 A MySignals exchange ends at the `Ack`: the service has accepted the person's chosen agreement. That is the whole job — deliver the choice, confirm acceptance. Everything IEEE 7012 specifies _after_ a meeting of minds belongs to the MyTerms layer, not to MySignals:
 
@@ -230,7 +230,7 @@ sequenceDiagram
     end
 ```
 
-## 7. Compatibility notes & open questions
+## 8. Compatibility notes & open questions
 
 The remaining questions are about the MyTerms _payload_ convention, not the transport.
 
