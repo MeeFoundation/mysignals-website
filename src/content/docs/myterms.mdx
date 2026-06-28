@@ -63,7 +63,7 @@ MTPAZ-2: CNT2CIT2CPT2CSD2
 MTPAZ-3: 38
 ```
 
-That is precisely the failure mode the MySignals spec calls out in §1.2: a new `*-` header per concern adds header entropy (fingerprinting surface), broadcasts to every endpoint with no chance to discover support first, and spreads one signal across many fields. MySignals collapses the whole thing into a **single** header whose value is `<schemaUri>;<payload>`, makes discovery **optional and in-band**, and **acknowledges** the result:
+That is a concern the MySignals spec calls out in §1.2: a new `*-` header per concern adds header entropy (fingerprinting surface), broadcasts to every endpoint with no chance to discover support first, and spreads one signal across many fields. MySignals collapses the whole thing into a **single** header whose value is `<schemaUri>;<payload>`, makes discovery **optional and in-band**, and **acknowledges** the result:
 
 ```http
 GET /network-resource HTTP/1.1
