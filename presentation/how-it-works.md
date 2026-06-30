@@ -15,7 +15,7 @@ signals. The site acknowledges each — and if one can't be honored, it says so
 sequenceDiagram
     actor U as You
     participant A as Agent (e.g. Browser)
-    participant S as Site / app
+    participant S as Website
 
     U->>A: Configure signaltypes
 
