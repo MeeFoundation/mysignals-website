@@ -9,7 +9,7 @@ button:
   enable: true
   label: "View Full Spec"
   link: "/spec/"
-## embedVideoId: "rAEjlG6QO8s"
+embedVideoId: "rAEjlG6QO8s"
 explanation: |
   ##### **MySignals is a protocol for exchanging signals between your agent and a service provider website/app.**
   It's an extensible communications protocol that lets developers define specific kinds of signals (signaltypes) that can be exchanged. It defines a common namespace for these signaltypes and a syntax for passing parameters. Your agent can send signals on its very first request, and can optionally discover which signaltypes a service provider supports before sending.
@@ -18,9 +18,10 @@ explanation: |
   | :----------: | :----------: |
   | **Privacy**  | Proffer your legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals provides an alternate implementation of the [Global Privacy Control](https://globalprivacycontrol.org/).  |
   |  **MyTerms** | Proffer, negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using [IEEE 7012](https://standards.ieee.org/ieee/7012/7192/).|
-  | **AgeVerified** | Request an age-appropriate experience from the service provider, and proffer your age verification and consent management endpoints. |
-  | **Identity** | Tell the service provider who you are. Give them a (self-sovereign) digital identifier (e.g. KERI AID).  |
-  | **IdP** | Proffer the IdP(s) (identity provider(s)) you use. This solves the [NASCAR](https://apicrazy.com/2014/07/22/nascar-problem-in-authorisation-server-selection/) problem. |
-
+  | **AgeProtect** | Request an age-appropriate experience from the service provider, and proffer your age verification and consent management endpoints. |
+  | **Identity** | Tell the service provider who you are. Give them a (self-sovereign) digital identifier.  |
+  | **KERI-AID** | Proffer your KERI Autonomic identifier. |
+  | **IdP** | Proffer the IdP(s) (identity provider(s)) you use.  This solves the [NASCAR](https://apicrazy.com/2014/07/22/nascar-problem-in-authorisation-server-selection/) problem. |
+  | **SIOPv2** | Tell the service provider that your agent supports OpenID SIOPv2 allowing their site/app to display a “Continue with wallet” button for password-less login. |
 
 ---
