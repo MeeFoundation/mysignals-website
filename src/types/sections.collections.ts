@@ -52,7 +52,7 @@ export const descriptionSection = defineCollection({
     bg_image: z.string(),
     description: z.string(),
     explanation: z.string(),
-    embedVideoId: z.string(),
+    embedVideoId: z.string().optional(),
     button: z.object({
       enable: z.boolean(),
       label: z.string(),

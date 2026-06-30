@@ -65,17 +65,19 @@ const {
           />
         </div>
       </div>
-      <div data-aos="fade-up-sm">
-        <div class="flex flex-row justify-center pt-16">
-          <iframe
-            width="560"
-            height="315"
-            src=`https://www.youtube.com/embed/${embedVideoId}`
-            frameborder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
+      {embedVideoId && (
+        <div data-aos="fade-up-sm">
+          <div class="flex flex-row justify-center pt-16">
+            <iframe
+              width="560"
+              height="315"
+              src=`https://www.youtube.com/embed/${embedVideoId}`
+              frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen></iframe>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   </div>
 </section>
