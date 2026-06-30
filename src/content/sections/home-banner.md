@@ -2,8 +2,8 @@
 enable: true
 # Banner
 note: ""
-title: "Say hello and signal your intent"
-description: MySignals is a protocol to allow you to send your intent to any website just by browsing.
+title: "Signal your intent"
+description: MySignals is a protocol that allows your browser to automagically send your intentions to a website.
 
 image:
   src: "/images/banner.jpg" # Main Image
