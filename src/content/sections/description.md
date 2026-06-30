@@ -11,7 +11,7 @@ button:
   link: "/spec/"
 explanation: |
   ##### **MySignals is a protocol to allow an end-user to send signals to any website via their browser.**
-  It's an extensible communications protocol allowing developers define new kinds of signals (URIs). If parameters also need to be sent along with the URI, a syntax for this is provided. Typically the user's browser sends signals on its first HTTP request. It can optionally discover which signaltypes a website supports before sending.
+  It's an extensible communications protocol allowing developers to define new kinds of signals (URIs). If parameters need to be sent along with the URI, a syntax for this is provided. Typically the user's browser sends signals on its first HTTP request, and can optionally discover which signal types a website supports before sending.
   
   |    **Signal**    |  **Description** |
   | :----------: | :----------: |
