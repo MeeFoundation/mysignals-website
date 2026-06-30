@@ -4,7 +4,7 @@ enable: true
 title: ""
 image: "/images/call-to-action.png"
 bg_image: "/images/call-to-action-bg.png"
-description: MySignals lets people signal their intent, just by browsing or using apps.
+description: MySignals lets people signal their intent, just by browsing.
 button:
   enable: true
   label: "View Full Spec"
