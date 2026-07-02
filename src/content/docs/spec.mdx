@@ -60,7 +60,7 @@ Defining a custom `Sec-*` header field for each type of signal has disadvantages
 MySignals defines a protocol by which a person's agent sends signals to a service provider website/app. It is an extensible communications protocol that allows developers to define specific kinds of signals (signaltypes) that can be sent. It defines a common namespace for these signaltypes and a syntax for passing parameters. It has these characteristics:
 
 - It is **stateless**: every request is interpreted on its own, and a service provider never requires a prior exchange before honouring a signal.
-- An agent MAY send one or more signals **proactively**, as `Sec-MS` request headers — each identifying the signal by its **schema URI** (§3.2) and carrying its payload — without any prior negotiation. A time-sensitive or legally binding signal such as GPCv2 can therefore ride the very first request.
+- An agent MAY send one or more signals **proactively**, as `Sec-MS` request headers — each identifying the signal by its **schema URI** (§3.2) and carrying its payload — without any prior negotiation. A time-sensitive or legally binding signal such as GPC can therefore ride the very first request.
 - **Discovery is optional and in-band.** An agent MAY first probe with a `Sec-MS-Discovery: 1` field; a supporting service provider responds with an `Accept-MS` field listing the schema URIs it supports. The advertisement is cacheable.
 - The service provider **acknowledges** each received signal with a separate `Ack-MS` field reporting `Ack`, `Unknown`, or `BadData` for that signal's schema URI.
 - Protocol is inspired by pattern similar to that used in [[**ClientHints**]](#ref-clienthints), reducing the fingerprinting surface area and network traffic.
@@ -85,7 +85,7 @@ The protocol establishes no session. A service provider MUST NOT require a prior
 
 On the wire a signal is identified not by its signaltype name (§2) but by its **schema URI** — the URL of the signal's **definition**. The definition is the source of truth for what a signal means and what shape its payload takes; it MAY be a JSON Schema document or a human-readable specification page. The definition's contents and semantics belong to the signaltype and are out of scope of this specification.
 
-A schema URI is **immutable**: a revised definition MUST be published at a new URL (for example `/defs/myterms-v2.json`) rather than by mutating the existing resource. Because a definition cannot change in place, an agent MAY cache it indefinitely (§3.6).
+A schema URI is **immutable**: a revised definition MUST be published at a new URL (for example `../myterms-v2.json`) rather than by mutating the existing resource. Because a definition cannot change in place, an agent MAY cache it indefinitely (§3.6).
 
 ### 3.3 Sending signals
 
@@ -94,14 +94,14 @@ An agent submits a signal by including a `Sec-MS` request header whose value is 
 ```http
 GET /page HTTP/2
 Host: example.com
-Sec-MS: https://example.com/defs/gpcv2.json;1
-Sec-MS: https://example.com/defs/myterms-v1.json;{"contract":"P7012-DDA-1"}
+Sec-MS: https://globalprivacycontrol.org/v1.json;1
+Sec-MS: https://agreements.info/myterms-v1.json;{"contract":"P7012-DDA-1"}
 ```
 
 ```http
 HTTP/1.1 200 OK
-Ack-MS: https://example.com/defs/gpcv2.json=Ack
-Ack-MS: https://example.com/defs/myterms-v1.json=Ack
+Ack-MS: https://globalprivacycontrol.org/v1.json=Ack
+Ack-MS: https://agreements.info/myterms-v1.json=Ack
 ```
 
 <Callout type="note" title="Sec- vs X- headers">
@@ -117,8 +117,8 @@ sequenceDiagram
     participant A as Agent
     participant S as Service provider
     Note over A: Supported set already known (cache or config)
-    A->>S: GET /page + Sec-MS gpcv2.json
-    S-->>A: 200 OK + Ack-MS gpcv2.json=Ack
+    A->>S: GET /page + Sec-MS gpcv1.json
+    S-->>A: 200 OK + Ack-MS gpcv1.json=Ack
 ```
 
 ### 3.4 Discovery (optional phase)
@@ -133,7 +133,7 @@ Sec-MS-Discovery: 1
 
 ```http
 HTTP/1.1 200 OK
-Accept-MS: https://example.com/defs/gpcv2.json, https://example.com/defs/myterms-v1.json
+Accept-MS: https://globalprivacycontrol/v1.json, https://agreements.info/myterms-v1.json
 Cache-Control: public, max-age=86400
 ```
 
@@ -181,24 +181,24 @@ Ack-MS: https://example.com/defs/siopv2.json=Unknown
 **Recognised but invalid** — for example an out-of-range value:
 
 ```http
-Sec-MS: https://example.com/defs/gpcv2.json;2
+Sec-MS: https://globalprivacycontrol.org/v1.json;2
 ```
 
 ```http
-Ack-MS: https://example.com/defs/gpcv2.json=BadData
+Ack-MS: https://globalprivacycontrol.org/v1.json=BadData
 ```
 
 **Mixed batch** — independent evaluation yields one entry per signal:
 
 ```http
-Sec-MS: https://example.com/defs/gpcv2.json;1
-Sec-MS: https://example.com/defs/myterms-v1.json;{}
+Sec-MS: https://globalprivacycontrol.org/v1.json;1
+Sec-MS: https://agreements.info/myterms-v1.json;{}
 Sec-MS: https://example.com/defs/siopv2.json;{"client_id":"did:example:123"}
 ```
 
 ```http
-Ack-MS: https://example.com/defs/gpcv2.json=Ack
-Ack-MS: https://example.com/defs/myterms-v1.json=BadData
+Ack-MS: https://globalprivacycontrol/v1.json=Ack
+Ack-MS: https://agreements.info/myterms-v1.json=BadData
 Ack-MS: https://example.com/defs/siopv2.json=Unknown
 ```
 
@@ -239,8 +239,8 @@ sequenceDiagram
     A->>S: GET /page + Sec-MS-Discovery 1
     Note over S: Stateless call
     S-->>A: 200 OK + updated Accept-MS list + Cache-Control
-    A->>S: GET /page + Sec-MS gpcv2.json
-    S-->>A: 200 OK + Ack-MS gpcv2.json=Ack
+    A->>S: GET /page + Sec-MS gpcv1.json
+    S-->>A: 200 OK + Ack-MS gpcv1.json=Ack
 ```
 
 ## 4. Signaltypes
@@ -287,7 +287,7 @@ Errors move the client to `ERROR`, capturing the previous state for clean retry.
 
 ### 5.3 Signal definitions and validation
 
-Each entry in the `signals` map carries a required `definitionUri` — the SDK-side schema URI for the signal (§3.2). It may point to a JSON Schema document or a human-readable spec page, and as at the protocol level is treated as immutable: publish new versions at new URLs, e.g. `/schemas/myterms/v2.json`.
+Each entry in the `signals` map carries a required `definitionUri` — the SDK-side schema URI for the signal (§3.2). It may point to a JSON Schema document or a human-readable spec page, and as at the protocol level is treated as immutable: publish new versions at new URLs, e.g. `../myterms-v2.json`.
 
 Validation is **advisory by default**; the server remains authoritative.
 
