@@ -17,7 +17,7 @@ status:
       content: "This note is informative. It illustrates one way to carry IEEE 7012-2025 MyTerms agreements over MySignals; it adds no normative requirements to either specification. Schema URIs, payloads, and agreement codes are illustrative."
 ---
 
-# MyTerms (IEEE 7012) over MySignals
+# MyTerms over MySignals
 
 ## 1. Introduction
 
@@ -70,12 +70,12 @@ That is a concern the MySignals spec calls out in §1.2: a new `*-` header per c
 ```http
 GET /network-resource HTTP/1.1
 Host: example.com
-Sec-MS: https://example.com/defs/myterms-v1.json;SD-BASE
+Sec-MS: https://agreements.info/myterms-v1.json;SD-BASE
 ```
 
 ```http
 HTTP/1.1 200 OK
-Ack-MS: https://example.com/defs/myterms-v1.json=Ack
+Ack-MS: https://agreements.info/myterms-v1.json=Ack
 ```
 
 ## 4. The mapping between MyTerms and MySignals
@@ -96,14 +96,14 @@ Ack-MS: https://example.com/defs/myterms-v1.json=Ack
 ```http
 GET /article/123 HTTP/1.1
 Host: news.example.com
-Sec-MS: https://news.example.com/defs/myterms-v1.json;SD-BASE
+Sec-MS: https://agreements.info/myterms-v1.json;SD-BASE
 ```
 
 The service evaluates the one signal and answers with one `Ack-MS` (§3.5):
 
 ```http
 HTTP/1.1 200 OK
-Ack-MS: https://news.example.com/defs/myterms-v1.json=Ack
+Ack-MS: https://agreements.info/myterms-v1.json=Ack
 ```
 
 ```mermaid
