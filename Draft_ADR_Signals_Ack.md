@@ -1,6 +1,6 @@
 # ARD — MySignals: Optional Discovery & Signal Acknowledgement
 
-> Architecture Decision Record for the [MySignals](https://mysignals.org/spec/) handshake.
+> Architecture Decision Record for the [MySignals](https://mysignals.dev/spec/) handshake.
 
 |                   |                                                                                |
 | ----------------- | ------------------------------------------------------------------------------ |
