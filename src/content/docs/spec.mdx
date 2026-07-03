@@ -83,7 +83,7 @@ The protocol establishes no session. A service provider MUST NOT require a prior
 
 ### 3.2 Schema URIs and signal definitions
 
-On the wire a signal is identified not by its signaltype name (§2) but by its **schema URI** — the URL of the signal's **definition**. The definition is the source of truth for what a signal means and what shape its payload takes; it MAY be a JSON Schema document or a human-readable specification page. The definition's contents and semantics belong to the signaltype and are out of scope of this specification.
+On the wire a signal is identified by its **schema URI** — the URL of the signal's **definition**. The definition is the source of truth for what a signal means and what shape its payload takes; it RECOMMENDED to be a JSON Schema document or a human-readable specification page. The definition and semantics belong to the signaltype and are out of scope of this specification.
 
 A schema URI is **immutable**: a revised definition MUST be published at a new URL (for example `../myterms-v2.json`) rather than by mutating the existing resource. Because a definition cannot change in place, an agent MAY cache it indefinitely (§3.6).
 
