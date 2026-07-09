@@ -12,5 +12,5 @@ button_github:
 button_discord:
   enable: true
   label: "Discord"
-  link: "https://discord.gg/7CWzNvmS"
+  link: "https://discord.gg/wZWUSxDjGg"
 ---

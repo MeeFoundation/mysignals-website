@@ -11,5 +11,5 @@ items:
   - question: Who is supporting the development of MySignals?
     answer: MySignals is a project of [The Mee Foundation](https://mee.foundation) in collaboration with [PRIVO](https://privo.com) and [Swift Invention](https://swiftinvention.com).
   - question: How can I get involved in developing the proposed spec?
-    answer: You can join our [Discord](https://discord.gg/7CWzNvmS) and submit PRs to our [Github](https://github.com/MeeFoundation/mysignals-website).
+    answer: You can join our [Discord](https://discord.gg/wZWUSxDjGg) and submit PRs to our [Github](https://github.com/MeeFoundation/mysignals-website).
 ---
