@@ -217,6 +217,26 @@ export const featuresSections = defineCollection({
   }),
 });
 
+export const howItWorksSection = defineCollection({
+  loader: glob({
+    pattern: "how-it-works.{md,mdx}",
+    base: "src/content/sections",
+  }),
+  schema: z.object({
+    id: z.string(),
+    enable: z.boolean(),
+    title: z.string(),
+    description: z.string(),
+    steps: z.array(
+      z.object({
+        title: z.string(),
+        description: z.string(),
+      }),
+    ),
+    diagram: z.string(),
+  }),
+});
+
 export const homeBannerSection = defineCollection({
   loader: glob({
     pattern: "home-banner.{md,mdx}",
