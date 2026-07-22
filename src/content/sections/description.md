@@ -15,7 +15,6 @@ explanation: |
   
   |    **Signal**    |  **Description** |
   | :----------: | :----------: |
-  | **Privacy**  | Proffer your legally binding notice to the service provider that it must respect your right that they “Do Not Sell” your personal information. MySignals can be used to carry the [Global Privacy Control](https://globalprivacycontrol.org/) signal.  |
   |  **MyTerms** | Proffer, negotiate and digitally sign mutually acceptable contracts related to privacy and data sharing using [IEEE 7012](https://standards.ieee.org/ieee/7012/7192/).|
   | **AgeVerified** | Tell the website you've been age verified by a third-party age verification service, and can and proffer verified age information on demand. |
   | **Identity** | Tell the service provider who you are. Proffer them a (self-sovereign) digital identifier (e.g. KERI-AID, etc.).  |
